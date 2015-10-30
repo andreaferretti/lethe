@@ -12,7 +12,7 @@ object Main extends js.JSApp {
       "this is a secret",
       "this is secret as well",
       "strictly confidential"
-    ) map (_.getBytes("UTF-8"))
+    )
   val remote = new MemoryRemote(slots = 3)
   val oram = new UnsafeORAM(remote)
 
@@ -28,7 +28,7 @@ object Main extends js.JSApp {
       println("written everything")
       oram.read(1) onSuccess {
         case Some(s) =>
-          $("body").text(new String(s, "UTF-8"))
+          $("body").text(s)
         case None =>
           println("uh?")
       }
