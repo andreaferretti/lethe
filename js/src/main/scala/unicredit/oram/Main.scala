@@ -21,21 +21,17 @@ object Main extends js.JSApp {
   def main = $({() =>
     $("body").text("hello")
 
-    val bulkLoadFuture = oram.init(elements)
+    val future =  for {
+      _ <- oram.init(elements)
+      previous <- oram.read(2)
+      _ <- oram.write(2, "new secret")
+      bulk <- oram.read(0)
+      written <- oram.read(2)
+    } yield (previous, bulk, written)
 
-    // val writeFuture = Util.sequentially(elements.zipWithIndex) { case (x, i) =>
-    //   println("about to write", i, x)
-    //   oram.write(i, x)
-    // }
-
-    bulkLoadFuture onSuccess { case _ =>
-      println("written everything")
-      oram.read(1) onSuccess {
-        case Some(s) =>
-          $("body").text(s)
-        case None =>
-          println("uh?")
-      }
+    future onSuccess { case (a, b, c) =>
+      $("body").text(s"$a:$b:$c")
     }
+
   })
 }
