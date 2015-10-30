@@ -1,6 +1,6 @@
 package unicredit.oram
 
-import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
+import scala.scalajs.concurrent.JSExecutionContext.Implicits.runNow
 import scala.scalajs.js
 import js.annotation.JSExport
 
