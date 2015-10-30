@@ -8,23 +8,27 @@ import org.scalajs.jquery.{ jQuery => $ }
 
 
 object Main extends js.JSApp {
-  val elements = Array(
+  def flip[A, B](x: (A, B)) = (x._2, x._1)
+
+  val elements = List(
       "this is a secret",
       "this is secret as well",
       "strictly confidential"
-    )
-  val remote = new MemoryRemote(slots = 3)
+    ).zipWithIndex map flip
+  val remote = new MemoryRemote
   val oram = new UnsafeORAM(remote)
 
   def main = $({() =>
     $("body").text("hello")
 
-    val writeFuture = Util.sequentially(elements.zipWithIndex) { case (x, i) =>
-      println("about to write", i, x)
-      oram.write(i, x)
-    }
+    val bulkLoadFuture = oram.init(elements)
 
-    writeFuture onSuccess { case _ =>
+    // val writeFuture = Util.sequentially(elements.zipWithIndex) { case (x, i) =>
+    //   println("about to write", i, x)
+    //   oram.write(i, x)
+    // }
+
+    bulkLoadFuture onSuccess { case _ =>
       println("written everything")
       oram.read(1) onSuccess {
         case Some(s) =>
