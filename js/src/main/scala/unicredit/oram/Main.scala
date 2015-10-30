@@ -19,8 +19,6 @@ object Main extends js.JSApp {
   val oram = new UnsafeORAM(remote)
 
   def main = $({() =>
-    $("body").text("hello")
-
     val future =  for {
       _ <- oram.init(elements)
       previous <- oram.read(2)
