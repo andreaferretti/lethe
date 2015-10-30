@@ -6,6 +6,7 @@ import scala.concurrent.{ Future, ExecutionContext }
 trait TrivialORAM[Id, Doc] extends ORAM[Id, Doc] with Client[Id, Doc] {
   override def readAndRemove(id: Id) =
     remote.capacity flatMap { n =>
+      println(n)
       (0 until n).foldLeft(Future(None: Option[Doc])) { (f, i) =>
         for {
           (uid, doc) <- fetchClear(i)

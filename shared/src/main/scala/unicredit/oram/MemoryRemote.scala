@@ -3,8 +3,10 @@ package unicredit.oram
 import scala.concurrent.{ Future, ExecutionContext }
 
 
-class MemoryRemote(var data: Array[Array[Byte]])(implicit ec: ExecutionContext) extends Remote {
-  val capacity = Future(data.length)
+class MemoryRemote(slots: Int)(implicit ec: ExecutionContext) extends Remote {
+  var data: Array[Array[Byte]] = Array.fill(slots)(Array())
+
+  def capacity = Future(slots)
 
   def fetch(n: Int) = Future(data(n))
 

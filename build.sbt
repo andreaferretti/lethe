@@ -12,12 +12,14 @@ lazy val oram = crossProject.in(file("."))
   )
   .jvmSettings(
     libraryDependencies ++= Seq(
-      "com.typesafe.akka" % "akka-actor_2.11" % "2.4.0"
+      "com.typesafe.akka" %% "akka-actor" % "2.4.0"
     )
   )
   .jsSettings(
+    persistLauncher in Compile := true,
     libraryDependencies ++= Seq(
-      "org.scala-js" %%% "scalajs-dom" % "0.8.0"
+      "org.scala-js" %%% "scalajs-dom" % "0.8.0",
+      "be.doeraene" %%% "scalajs-jquery" % "0.8.1"
     )
   )
 
