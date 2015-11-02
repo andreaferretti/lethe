@@ -10,14 +10,14 @@ class ZMQRemote(url: String) extends Remote {
 
   socket.connect(url)
 
-  private def ask(m: ZMQMessage) = {
+  private def ask(m: Message) = {
     socket.send(m.toBytes)
     socket.recv
   }
 
-  private def tell(m: ZMQMessage) = { ask(m); () }
+  private def tell(m: Message) = { ask(m); () }
 
-  def capacity = Bytes.toInt(ask(Capacity))
+  def capacity = Bytes.toInt(ask(Capacity()))
 
   def fetch(n: Int) = ask(Fetch(n))
 
