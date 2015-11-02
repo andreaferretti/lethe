@@ -12,7 +12,7 @@ lazy val oram = crossProject.in(file("."))
   )
   .jvmSettings(
     libraryDependencies ++= Seq(
-      "com.typesafe.akka" %% "akka-actor" % "2.4.0"
+      "org.zeromq" % "jeromq" % "0.3.5"
     )
   )
   .jsSettings(
