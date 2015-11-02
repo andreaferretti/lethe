@@ -1,21 +1,22 @@
 package unicredit.oram.sync
 
 import scala.math.BigInt
+import java.nio.ByteBuffer
+
+import boopickle.Default._
 
 
-trait UnencryptedClient extends Client[Int, String] {
+trait UnencryptedClient[Id, Doc] extends Client[Id, Doc] {
+  implicit def pickle: Pickler[(Id, Doc)]
 
-  def decrypt(a: Array[Byte]) = {
-    val n = BigInt(a take 4).toInt
+  def decrypt(a: Array[Byte]) =
+    Unpickle[(Id, Doc)].fromBytes(ByteBuffer.wrap(a))
 
-    (n, new String(a drop 4, "UTF-8"))
-  }
-
-  def encrypt(data: (Int, String)) = {
-    val (n, doc) = data
-    val head = BigInt(n).toByteArray
-    val padding = Array.fill[Byte](4 - head.length)(0)
-
-    padding ++ head ++ doc.getBytes("UTF-8")
+  def encrypt(data: (Id, Doc)) = {
+    val buffer = Pickle.intoBytes(data)
+    val result = Array.fill[Byte](buffer.limit)(0)
+    buffer.clear
+    buffer.get(result)
+    result
   }
 }

@@ -3,12 +3,12 @@ package unicredit.oram.sync
 
 trait ORAM[Id, Doc] {
   def empty: Doc
-  def readAndRemove(id: Id): Option[Doc]
+  def readAndRemove(id: Id): Doc
   def add(id: Id, doc: Doc): Unit
 
   def read(id: Id) = {
     val data = readAndRemove(id)
-    add(id, data getOrElse empty)
+    add(id, data)
 
     data
   }
