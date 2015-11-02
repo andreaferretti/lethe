@@ -5,6 +5,7 @@ import scala.scalajs.js
 import js.annotation.JSExport
 
 import org.scalajs.jquery.{ jQuery => $ }
+import async._
 
 
 object Main extends js.JSApp {

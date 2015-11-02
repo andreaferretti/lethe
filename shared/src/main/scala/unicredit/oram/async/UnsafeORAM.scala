@@ -1,4 +1,4 @@
-package unicredit.oram
+package unicredit.oram.async
 
 import scala.concurrent.ExecutionContext
 
