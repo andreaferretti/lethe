@@ -11,7 +11,8 @@ object Main extends App {
       "this is secret as well",
       "strictly confidential"
     ).zipWithIndex map flip
-  val remote = new MemoryRemote
+  // val remote = new MemoryRemote
+  val remote = new ZMQRemote("tcp://localhost:8888")
   val oram = new UnsafeORAM(remote)
 
   oram.init(elements)
