@@ -13,7 +13,8 @@ object Main extends App {
     ).zipWithIndex map flip
   // val remote = new MemoryRemote
   val remote = new ZMQRemote("tcp://localhost:8888")
-  val oram = new UnsafeORAM(remote)
+  // val oram = new UnsafeORAM(remote)
+  val oram = new MyORAM(remote, "Hello world")
 
   oram.init(elements)
   println("at pos 2:", oram.read(2))
