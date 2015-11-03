@@ -7,7 +7,8 @@ lazy val oram = crossProject.in(file("."))
     version := "0.1.0",
     scalacOptions ++= Seq(
         "-deprecation",
-        "-feature"
+        "-feature",
+        "-language:postfixOps"
     ),
     libraryDependencies ++= Seq(
       "me.chrons" %%% "boopickle" % "1.1.0"
