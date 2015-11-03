@@ -67,6 +67,10 @@ trait PathORAMProtocol[Id, Doc] extends ORAMProtocol[Id, Doc] { self: Client[Id,
     ???
   }
 
+  def writeBucket(p: Path, ℓ: Int, stash: Bucket): Unit = {
+    ???
+  }
+
   def findInStash(id: Id): Doc = stash.getOrElse(id, empty)
 
   def access(op: Op, id: Id, doc: Doc) = {
@@ -80,8 +84,10 @@ trait PathORAMProtocol[Id, Doc] extends ORAMProtocol[Id, Doc] { self: Client[Id,
       stash += (id -> doc)
     }
     for (ℓ <- (0 to L).reverse) {
-      var stash_ = stash.keySet filter { a => x.take(ℓ) == position(a).take(ℓ) }
-      stash --= (stash_ take Z)
+      var stash_ = stash filter { case (a, _) => x.take(ℓ) == position(a).take(ℓ) }
+      stash_ = stash_ take Z
+      stash --= stash_.keySet
+      writeBucket(x, ℓ, stash_.toSeq)
     }
     data
   }
