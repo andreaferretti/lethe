@@ -7,8 +7,12 @@ import scala.collection.BitSet
 
 
 trait PathORAM[Id, Doc] extends ORAM[Id, Doc] with Client[Id, Doc] {
+  type Bucket = Seq[(Id, Doc)]
   def rng: Random
   def L: Int
+  def Z: Int
+  var position = Map.empty[Id, Path]
+  var stash = Map.empty[Id, Doc]
 
   override def readAndRemove(id: Id) = ???
 
@@ -50,8 +54,27 @@ trait PathORAM[Id, Doc] extends ORAM[Id, Doc] with Client[Id, Doc] {
     new Path(bitsetOfArray(bytes), bits)
   }
 
-  def access(op: Op, id: Id, doc: Doc) = {
+  def readBucket(p: Path, ℓ: Int): Bucket = {
+    ???
+  }
 
+  def findInStash(id: Id): Doc = stash.getOrElse(id, empty)
+
+  def access(op: Op, id: Id, doc: Doc) = {
+    val x = position(id)
+    position += (id -> randomPath(L))
+    for (ℓ <- 0 to L) {
+      stash ++= readBucket(x, ℓ)
+    }
+    val data = findInStash(id)
+    if (op == Write) {
+      stash += (id -> doc)
+    }
+    for (ℓ <- (0 to L).reverse) {
+      var stash_ = stash.keySet filter { a => x(ℓ) == position(a)(ℓ) }
+      stash --= (stash_ take Z)
+    }
+    data
   }
 }
 
@@ -62,4 +85,5 @@ class MyPathORAM(val remote: Remote, val passPhrase: String)
   implicit val pickle = generatePickler[(Int, String)]
   def empty = ""
   val L = 16
+  val Z = 4
 }
