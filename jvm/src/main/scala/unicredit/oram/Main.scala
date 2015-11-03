@@ -15,6 +15,7 @@ object Main extends App {
   val remote = new ZMQRemote("tcp://localhost:8888")
   // val oram = new UnsafeORAM(remote)
   val oram = new TrivialORAM(remote, "Hello world")
+  // val oram = new PathORAM(remote, "Hello world")
 
   oram.init(elements)
   println("at pos 2:", oram.read(2))

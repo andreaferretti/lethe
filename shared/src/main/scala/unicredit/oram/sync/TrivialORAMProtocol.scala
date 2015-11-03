@@ -2,7 +2,21 @@ package unicredit.oram.sync
 
 
 trait TrivialORAMProtocol[Id, Doc] extends ORAMProtocol[Id, Doc] { self: Client[Id, Doc] =>
-  override def readAndRemove(id: Id) = {
+  // Note: There is no need to express read and write in terms of
+  // readAndRemove and add
+  override def read(id: Id) = {
+    val data = readAndRemove(id)
+    add(id, data)
+
+    data
+  }
+
+  override def write(id: Id, doc: Doc) = {
+    readAndRemove(id)
+    add(id, doc)
+  }
+
+  def readAndRemove(id: Id) = {
     val n = remote.capacity
     var result: Doc = empty
 
@@ -18,7 +32,7 @@ trait TrivialORAMProtocol[Id, Doc] extends ORAMProtocol[Id, Doc] { self: Client[
     result
   }
 
-  override def add(id: Id, doc: Doc) = {
+  def add(id: Id, doc: Doc) = {
     val n = remote.capacity
 
     for (i <- 0 until n) {
