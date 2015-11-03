@@ -10,13 +10,12 @@ trait AESClient[Id, Doc] extends BasicClient[Id, Doc] {
   def passPhrase: String
   val ITERATIONS = 65536
   val KEY_LENGTH = 256
-  val rnd = new SecureRandom()
+  val rng = new SecureRandom()
   val factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1")
 
   def getRandomBytes(size: Int) = {
     val bytes = Array.ofDim[Byte](size)
-    val rnd = new SecureRandom()
-    rnd.nextBytes(bytes)
+    rng.nextBytes(bytes)
     bytes
   }
 
