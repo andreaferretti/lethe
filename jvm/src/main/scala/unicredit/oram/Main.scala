@@ -12,21 +12,14 @@ object Main extends App {
       "strictly confidential"
     ).zipWithIndex map flip
   // val remote = new MemoryRemote
-  // val remote = new ZMQRemote("tcp://localhost:8888")
+  val remote = new ZMQRemote("tcp://localhost:8888")
   // val oram = new UnsafeORAM(remote)
-  // val oram = new MyORAM(remote, "Hello world")
+  val oram = new TrivialORAM(remote, "Hello world")
 
-  // oram.init(elements)
-  // println("at pos 2:", oram.read(2))
-  // println("at pos 0:", oram.read(0))
-  // println("writing new item at pos 2")
-  // oram.write(2, "new secret")
-  // println("at pos 2:", oram.read(2))
-
-  println("started")
-  val oram2 = new MyPathORAM(new MemoryRemote, "Hello world")
-  println("oram ready")
-  val path = oram2.randomPath(10)
-
-  println(path)
+  oram.init(elements)
+  println("at pos 2:", oram.read(2))
+  println("at pos 0:", oram.read(0))
+  println("writing new item at pos 2")
+  oram.write(2, "new secret")
+  println("at pos 2:", oram.read(2))
 }

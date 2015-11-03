@@ -6,7 +6,7 @@ import scala.collection.mutable.{ BitSet => MBitSet }
 import scala.collection.BitSet
 
 
-trait PathORAM[Id, Doc] extends ORAM[Id, Doc] with Client[Id, Doc] {
+trait PathORAMProtocol[Id, Doc] extends ORAMProtocol[Id, Doc] { self: Client[Id, Doc] =>
   type Bucket = Seq[(Id, Doc)]
   def rng: Random
   def L: Int
@@ -78,8 +78,8 @@ trait PathORAM[Id, Doc] extends ORAM[Id, Doc] with Client[Id, Doc] {
   }
 }
 
-class MyPathORAM(val remote: Remote, val passPhrase: String)
-  extends PathORAM[Int, String] with AESClient[Int, String] {
+class PathORAM(val remote: Remote, val passPhrase: String)
+  extends PathORAMProtocol[Int, String] with AESClient[Int, String] {
   import boopickle.Default._
 
   implicit val pickle = generatePickler[(Int, String)]

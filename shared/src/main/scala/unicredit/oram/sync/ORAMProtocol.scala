@@ -1,7 +1,7 @@
 package unicredit.oram.sync
 
 
-trait ORAM[Id, Doc] {
+trait ORAMProtocol[Id, Doc] {
   def empty: Doc
   def readAndRemove(id: Id): Doc
   def add(id: Id, doc: Doc): Unit
