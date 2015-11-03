@@ -11,5 +11,5 @@ trait Client[Id, Doc] {
 
   def putClear(n: Int, data: (Id, Doc)) = remote.put(n, encrypt(data))
 
-  def init(data: Seq[(Id, Doc)]) = remote.init(data map encrypt)
+  def init(data: Seq[(Id, Doc)]): Unit = remote.init(data map encrypt)
 }

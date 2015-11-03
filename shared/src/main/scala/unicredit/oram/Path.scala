@@ -32,5 +32,8 @@ object Path {
   }
 
   def apply(n: Int) = new Path(n)
-  def random(L: Int)(implicit rng: Random) = new Path(rng.nextInt(pow(2, L) - 1) + 1)
+  def random(L: Int)(implicit rng: Random) = {
+    val cap = pow(2, L)
+    new Path(rng.nextInt(cap) + cap)
+  }
 }
