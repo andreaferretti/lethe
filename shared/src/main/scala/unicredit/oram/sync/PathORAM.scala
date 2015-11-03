@@ -26,9 +26,18 @@ trait PathORAMProtocol[Id, Doc] extends ORAMProtocol[Id, Doc] { self: Client[Id,
     def \(k: Int) = if (n % k == 0) n / k else n / k + 1
   }
 
-  class Path(bits: BitSet, n: Int) {
+  class Path(private val bits: BitSet, private val n: Int) {
     def apply(i: Int) = if (i < n) bits(i) else false
     def length = n
+    def take(k: Int) = new Path(bits, n min k)
+
+    override def equals(other: Any) = other match {
+      case p: Path =>
+        val bits1 = p.bits
+        val n1 = p.n
+        (n == n1) && (0 to n).forall(i => bits(i) == bits1(i))
+      case _ => false
+    }
 
     override def toString =
       "Path[" +
@@ -61,7 +70,7 @@ trait PathORAMProtocol[Id, Doc] extends ORAMProtocol[Id, Doc] { self: Client[Id,
   def findInStash(id: Id): Doc = stash.getOrElse(id, empty)
 
   def access(op: Op, id: Id, doc: Doc) = {
-    val x = position(id)
+    val x = position.getOrElse(id, randomPath(L))
     position += (id -> randomPath(L))
     for (ℓ <- 0 to L) {
       stash ++= readBucket(x, ℓ)
@@ -71,7 +80,7 @@ trait PathORAMProtocol[Id, Doc] extends ORAMProtocol[Id, Doc] { self: Client[Id,
       stash += (id -> doc)
     }
     for (ℓ <- (0 to L).reverse) {
-      var stash_ = stash.keySet filter { a => x(ℓ) == position(a)(ℓ) }
+      var stash_ = stash.keySet filter { a => x.take(ℓ) == position(a).take(ℓ) }
       stash --= (stash_ take Z)
     }
     data
