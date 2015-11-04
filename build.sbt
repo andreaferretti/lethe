@@ -1,5 +1,7 @@
 name := "ORAM"
 
+val zeromq = "org.zeromq" % "jeromq" % "0.3.5"
+
 lazy val oram = crossProject.in(file("."))
   .settings(
     scalaVersion := "2.11.7",
@@ -16,7 +18,7 @@ lazy val oram = crossProject.in(file("."))
   )
   .jvmSettings(
     libraryDependencies ++= Seq(
-      "org.zeromq" % "jeromq" % "0.3.5"
+      zeromq
     )
   )
   .jsSettings(
@@ -31,4 +33,15 @@ lazy val oram = crossProject.in(file("."))
 lazy val oramJVM = oram.jvm
 lazy val oramJS = oram.js
 
-lazy val root = project.in(file(".")).aggregate(oramJVM, oramJS)
+lazy val oramServer = project.in(file("server"))
+  .settings(
+    scalaVersion := "2.11.7",
+    organization := "unicredit",
+    version := "0.1.0",
+    libraryDependencies ++= Seq(
+      zeromq
+    )
+  )
+  .dependsOn(oram.jvm)
+
+lazy val root = project.in(file(".")).aggregate(oramJVM, oramJS, oramServer)

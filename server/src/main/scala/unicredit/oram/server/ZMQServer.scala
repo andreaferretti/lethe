@@ -10,7 +10,6 @@ object ZMQServer extends App {
   val socket = context.socket(ZMQ.REP)
 
   socket.bind(url)
-  // socket.subscribe("".getBytes)
 
   var data = Array.empty[Array[Byte]]
 
