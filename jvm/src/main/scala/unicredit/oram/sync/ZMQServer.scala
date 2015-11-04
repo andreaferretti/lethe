@@ -15,9 +15,7 @@ object ZMQServer extends App {
   var data = Array.empty[Array[Byte]]
 
   while (true) {
-    val m = Message.fromBytes(socket.recv)
-    println(m)
-    m match {
+    Message.fromBytes(socket.recv) match {
       case Capacity() => socket.send(Bytes(data.length))
       case Fetch(n) => socket.send(data(n))
       case Put(n, doc) =>
