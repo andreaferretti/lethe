@@ -1,5 +1,5 @@
 package unicredit.oram
-package sync
+package server
 
 import org.zeromq.ZMQ
 
@@ -11,17 +11,17 @@ object ZMQServer extends App {
 
   socket.bind(url)
 
-  var data = Array.empty[Array[Byte]]
+  val backend = new MemoryBackend
 
   while (true) {
     Message.fromBytes(socket.recv) match {
-      case Capacity() => socket.send(Bytes(data.length))
-      case Fetch(n) => socket.send(data(n))
+      case Capacity() => socket.send(Bytes(backend.capacity))
+      case Fetch(n) => socket.send(backend.fetch(n))
       case Put(n, doc) =>
-        data(n) = doc
+        backend.put(n, doc)
         socket.send("ok")
-      case Init(d) =>
-        data = d.toArray
+      case Init(data) =>
+        backend.init(data)
         socket.send("ok")
     }
   }
