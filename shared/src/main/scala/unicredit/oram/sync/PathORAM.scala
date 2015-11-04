@@ -26,21 +26,23 @@ trait PathORAMProtocol[Id, Doc] extends ORAMProtocol[Id, Doc] { self: Client[Id,
     (0 until Z) map { i => fetchClear(start + i) }
   }
 
-  def putBucket(p: Path, ℓ: Int, stash: Bucket): Unit = {
-    var position = (p.take(ℓ).int - 1) * Z
-    for (data <- stash) {
-      putClear(position, data)
-      position += 1
+  def putBucket(p: Path, ℓ: Int, bucket: Bucket): Unit = {
+    val start = (p.take(ℓ).int - 1) * Z
+    for (i <- 0 until Z) {
+      val item = if (i < bucket.length) bucket(i) else (emptyID, empty)
+      putClear(start + i, item)
     }
   }
 
   def access(op: Op, id: Id, doc: Doc) = {
     val x = position.getOrElse(id, Path.random(L))
+    println("position before:", position)
     position += (id -> Path.random(L))
     for (ℓ <- 0 to L) {
       stash ++= fetchBucket(x, ℓ)
     }
-    // println("path: ", x)
+    println("path: ", x)
+    println("position after:", position)
     val data = stash.getOrElse(id, empty)
     if (op == Write) {
       stash += (id -> doc)
@@ -52,7 +54,7 @@ trait PathORAMProtocol[Id, Doc] extends ORAMProtocol[Id, Doc] { self: Client[Id,
       stash --= stash_.keySet
       putBucket(x, ℓ, stash_.toSeq)
     }
-    // println("stash: " + stash)
+    println("stash: " + stash)
     data
   }
 
