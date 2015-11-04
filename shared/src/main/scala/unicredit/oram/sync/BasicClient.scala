@@ -8,6 +8,9 @@ import boopickle.Default._
 trait BasicClient[Id, Doc] extends Client[Id, Doc] {
   implicit def pickle: Pickler[(Id, Doc)]
 
+  def encryptBytes(a: Array[Byte]): Array[Byte]
+  def decryptBytes(a: Array[Byte]): Array[Byte]
+
   def decode(a: Array[Byte]) =
     Unpickle[(Id, Doc)].fromBytes(ByteBuffer.wrap(a))
 
@@ -18,4 +21,7 @@ trait BasicClient[Id, Doc] extends Client[Id, Doc] {
     buffer.get(result)
     result
   }
+
+  def decrypt(a: Array[Byte]) = decode(decryptBytes(a))
+  def encrypt(a: (Id, Doc)) = encryptBytes(encode(a))
 }

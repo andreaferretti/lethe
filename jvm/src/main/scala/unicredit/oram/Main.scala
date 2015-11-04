@@ -12,13 +12,9 @@ object Main extends App {
       "strictly confidential",
       "cippa lippa"
     ))).flatten.zipWithIndex map flip
-  // val remote = new MemoryRemote
   val remote = new ZMQRemote("tcp://localhost:8888")
-  // val oram = new UnsafeORAM(remote)
-  // val oram = new TrivialORAM(remote, "Hello world")
   val oram = new PathORAM(remote, "Hello world")
 
-  // oram.init(elements)
   oram.init
   for ((id, doc) <- elements) {
     oram.write(id, doc)

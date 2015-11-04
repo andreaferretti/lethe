@@ -4,6 +4,8 @@ import java.util.Random
 import scala.collection.mutable.{ BitSet => MBitSet }
 import scala.collection.BitSet
 
+import boopickle.Default._
+
 
 class Path(val int: Int) {
   val bits: BitSet = MBitSet.fromBitMaskNoCopy(Array(int.toLong))
@@ -36,4 +38,6 @@ object Path {
     val cap = pow(2, L)
     new Path(rng.nextInt(cap) + cap)
   }
+
+  implicit val pathPickler = transformPickler[Path, Int](_.int, apply)
 }

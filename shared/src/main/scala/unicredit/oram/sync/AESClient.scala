@@ -31,13 +31,12 @@ trait AESClient[Id, Doc] extends BasicClient[Id, Doc] {
   val messageStride = 1000
   val prefixLength = 128
 
-  override def decrypt(a: Array[Byte]) = {
+  override def decryptBytes(a: Array[Byte]) = {
     val content = dcipher.doFinal(a)
-    decode(content drop prefixLength)
+    content drop prefixLength
   }
 
-  override def encrypt(data: (Id, Doc)) = {
-    val content = encode(data)
+  override def encryptBytes(content: Array[Byte]) = {
     // Add a padding so that messages do not leak exact length
     val paddingSize = messageStride - (content.size % messageStride)
     val padding = Array.fill[Byte](paddingSize)(0)
