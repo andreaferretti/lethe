@@ -15,10 +15,14 @@ object Main extends App {
   val remote = new ZMQRemote("tcp://localhost:8888")
   val oram = new RecursivePathORAM(remote, "Hello world")
 
+  println("starting initialization...")
   oram.init
+  println("done!")
+  println("writing 200 elements...")
   for ((id, doc) <- elements) {
     oram.write(id, doc)
   }
+  println("done!")
   println("at pos 2:", oram.read(2))
   println("at pos 0:", oram.read(0))
   println("writing new item at pos 2")
