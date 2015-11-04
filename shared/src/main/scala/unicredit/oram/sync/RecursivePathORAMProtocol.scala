@@ -7,7 +7,6 @@ import boopickle.Default._
 trait RecursivePathORAMProtocol[Id, Doc, Bin] extends PathORAMProtocol[Id, Doc] { self: BasicClient[Id, Doc] =>
   def bin(id: Id): Bin
   def emptyBin: Bin
-  def passPhrase: String
   implicit def pickleId: Pickler[Id]
   implicit def pickleBin: Pickler[Bin]
   import Path.pathPickler
@@ -16,9 +15,8 @@ trait RecursivePathORAMProtocol[Id, Doc, Bin] extends PathORAMProtocol[Id, Doc] 
     val Z = self.Z
     val L = self.L
     val emptyID = self.emptyBin
-    val passPhrase = self.passPhrase
     val remote = self.remote
-    val rng = self.rng
+    lazy val rng = self.rng
     val empty = Map.empty[Id, Path]
     implicit val pickle = implicitly[Pickler[(Bin, Map[Id, Path])]]
 

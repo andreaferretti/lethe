@@ -6,14 +6,14 @@ import sync._
 object Main extends App {
   def flip[A, B](x: (A, B)) = (x._2, x._1)
 
-  val elements = (List.fill(100)(List(
+  val elements = (List.fill(50)(List(
       "this is a secret",
       "this is secret as well",
       "strictly confidential",
       "cippa lippa"
     ))).flatten.zipWithIndex map flip
   val remote = new ZMQRemote("tcp://localhost:8888")
-  val oram = new PathORAM(remote, "Hello world")
+  val oram = new RecursivePathORAM(remote, "Hello world")
 
   oram.init
   for ((id, doc) <- elements) {

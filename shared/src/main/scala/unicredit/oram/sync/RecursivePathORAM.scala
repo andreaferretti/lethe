@@ -16,6 +16,6 @@ class RecursivePathORAM(val remote: Remote, val passPhrase: String)
   def empty = ""
   def emptyID = -1
   def emptyBin = -1
-  val L = 8
+  val L = 16
   val Z = 4
 }
