@@ -23,7 +23,12 @@ lazy val messages = crossProject.in(file("messages"))
 
 lazy val oram = crossProject.in(file("."))
   .settings(commonSettings: _*)
-  .jvmSettings(libraryDependencies += zeromq)
+  .jvmSettings(
+    libraryDependencies ++= Seq(
+      zeromq,
+      "com.github.pathikrit" %% "better-files" % "2.13.0"
+    )
+  )
   .jsSettings(
     persistLauncher in Compile := true,
     libraryDependencies ++= Seq(
