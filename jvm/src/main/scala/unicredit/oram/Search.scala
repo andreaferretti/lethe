@@ -33,17 +33,18 @@ object Search extends App {
       val pickle = generatePickler[(UUID, String)]
     }
 
-  val remote = new ZMQRemote("tcp://localhost:8888")
-  val index = new IndexORAM(remote, "Hello world")
-  val oram = new DocumentORAM(remote, "Hello world")
+  val remote1 = new ZMQRemote("tcp://localhost:8888")
+  val remote2 = new ZMQRemote("tcp://localhost:8889")
+  val index = new IndexORAM(remote1, "Hello my friend")
+  val oram = new DocumentORAM(remote2, "Hello world")
 
   val store = new BasicStore(index, oram)
 
   println("Starting initialization...")
+  index.init
   oram.init
   println("Done!")
 
-  // val Directory(d) = file"examples"
   for (document <- ls(file"examples")) {
     println(s"Adding document $document")
     store.addDocument(document.contentAsString)
