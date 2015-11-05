@@ -4,7 +4,7 @@ package sync
 import java.util.Random
 
 
-trait PathORAMProtocol[Id, Doc] extends ORAMProtocol[Id, Doc] { self: Client[Id, Doc] =>
+trait PathORAMProtocol[Id, Doc] extends ORAM[Id, Doc] { self: Client[Id, Doc] =>
   type Bucket = Seq[(Id, Doc)]
   implicit def rng: Random
   def L: Int

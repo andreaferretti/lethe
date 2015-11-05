@@ -1,7 +1,7 @@
 package unicredit.oram.sync
 
 
-trait TrivialORAMProtocol[Id, Doc] extends ORAMProtocol[Id, Doc] { self: Client[Id, Doc] =>
+trait TrivialORAMProtocol[Id, Doc] extends ORAM[Id, Doc] { self: Client[Id, Doc] =>
   // Note: There is no need to express read and write in terms of
   // readAndRemove and add
   override def read(id: Id) = {
