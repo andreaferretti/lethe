@@ -17,7 +17,7 @@ object ZMQServer extends App {
   println(s"Server ready on port $port")
 
   // val backend = new MemoryBackend
-  val backend = new LevelDBBackend(new File(s"db-$port"))
+  val backend = new LevelDBBackend(new File(s"data/db-$port"))
 
   while (true) {
     Message.fromBytes(socket.recv) match {
