@@ -1,4 +1,4 @@
-package unicredit.oram.sync
+package unicredit.oram.sync.transport
 
 
 class MemoryRemote extends Remote {

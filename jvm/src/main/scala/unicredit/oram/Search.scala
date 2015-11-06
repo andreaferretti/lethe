@@ -2,35 +2,39 @@ package unicredit.oram
 
 import scala.io.StdIn
 import java.util.UUID
+import java.security.SecureRandom
 
 import better.files._, Cmds._
 import boopickle.Default._
 
 import sync._
 import search._
+import transport._
 
 
 object Search extends App {
   implicit val uuidPickler = transformPickler[UUID, String](_.toString, UUID.fromString)
 
-  class IndexORAM(val remote: Remote, val passPhrase: String)
-    extends LocalPathORAMProtocol[String, Set[UUID]]
-    with AESClient[String, Set[UUID]] {
+  class IndexORAM(remote: Remote, passPhrase: String)
+    extends LocalPathORAMProtocol[String, Set[UUID]] {
       val L = 8
       val Z = 4
+      val rng = new SecureRandom
       val empty = Set.empty[UUID]
       val emptyID = ""
       val pickle = generatePickler[(String, Set[UUID])]
+      val client = StandardClient[(String, Set[UUID])](remote, passPhrase)
     }
 
-  class DocumentORAM(val remote: Remote, val passPhrase: String)
-    extends LocalPathORAMProtocol[UUID, String]
-    with AESClient[UUID, String] {
+  class DocumentORAM(remote: Remote, passPhrase: String)
+    extends LocalPathORAMProtocol[UUID, String] {
       val L = 8
       val Z = 4
+      val rng = new SecureRandom
       val empty = ""
       val emptyID = UUID.fromString("16b01bbe-484b-49e8-85c5-f424a983205f")
       val pickle = generatePickler[(UUID, String)]
+      val client = StandardClient[(UUID, String)](remote, passPhrase)
     }
 
   val remote1 = new ZMQRemote("tcp://localhost:8888")

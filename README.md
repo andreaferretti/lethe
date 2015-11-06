@@ -6,7 +6,6 @@ TODO:
 * Add search on top of key/value store
 * Serialize client sessions
 * Async implementation
-* Alternative server backends (Redis, LevelDB...)
 * Compile SQL queries to sequences of get/search operations
 * More robust server
 

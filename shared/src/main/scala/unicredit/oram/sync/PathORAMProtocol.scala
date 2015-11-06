@@ -4,8 +4,9 @@ package sync
 import java.util.Random
 
 
-trait PathORAMProtocol[Id, Doc] extends ORAM[Id, Doc] { self: Client[Id, Doc] =>
+trait PathORAMProtocol[Id, Doc] extends ORAM[Id, Doc] {
   type Bucket = Seq[(Id, Doc)]
+  def client: StandardClient[(Id, Doc)]
   implicit def rng: Random
   def L: Int
   def Z: Int
@@ -25,14 +26,14 @@ trait PathORAMProtocol[Id, Doc] extends ORAM[Id, Doc] { self: Client[Id, Doc] =>
 
   def fetchBucket(p: Path, ℓ: Int): Bucket = {
     val start = (p.take(ℓ).int - 1) * Z
-    (0 until Z) map { i => fetchClear(start + i) }
+    (0 until Z) map { i => client.fetchClear(start + i) }
   }
 
   def putBucket(p: Path, ℓ: Int, bucket: Bucket): Unit = {
     val start = (p.take(ℓ).int - 1) * Z
     for (i <- 0 until Z) {
       val item = if (i < bucket.length) bucket(i) else (emptyID, empty)
-      putClear(start + i, item)
+      client.putClear(start + i, item)
     }
   }
 
@@ -59,6 +60,6 @@ trait PathORAMProtocol[Id, Doc] extends ORAM[Id, Doc] { self: Client[Id, Doc] =>
   def init: Unit = {
     val numBuckets = (math.pow(2, L + 1).toInt - 1) * Z
     val items = (0 until numBuckets) map { _ => (emptyID, empty) }
-    init(items)
+    client.init(items)
   }
 }

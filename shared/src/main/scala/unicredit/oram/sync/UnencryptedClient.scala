@@ -1,12 +1,12 @@
-package unicredit.oram.sync
-
-import scala.math.BigInt
-import java.nio.ByteBuffer
+package unicredit.oram
+package sync
 
 import boopickle.Default._
 
+import crypto.NoCrypter
+import serialization.BooSerializer
+import transport.Remote
 
-trait UnencryptedClient[Id, Doc] extends BasicClient[Id, Doc] {
-  def decryptBytes(a: Array[Byte]) = a
-  def encryptBytes(a: Array[Byte]) = a
-}
+
+class UnencryptedClient[A](remote: Remote)(implicit pickler: Pickler[A])
+  extends StandardClient[A](new BooSerializer[A], new NoCrypter, remote)

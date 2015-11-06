@@ -1,6 +1,7 @@
 package unicredit.oram
 
 import sync._
+import transport.ZMQRemote
 
 
 object Main extends App {

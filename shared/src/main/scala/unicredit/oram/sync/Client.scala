@@ -1,15 +1,11 @@
 package unicredit.oram.sync
 
-trait Client[Id, Doc] {
-  def remote: Remote
+trait Client[A] {
+  def capacity: Int
 
-  def decrypt(a: Array[Byte]): (Id, Doc)
+  def fetchClear(n: Int): A
 
-  def encrypt(data: (Id, Doc)): Array[Byte]
+  def putClear(n: Int, data: A): Unit
 
-  def fetchClear(n: Int) = decrypt(remote.fetch(n))
-
-  def putClear(n: Int, data: (Id, Doc)) = remote.put(n, encrypt(data))
-
-  def init(data: Seq[(Id, Doc)]): Unit = remote.init(data map encrypt)
+  def init(data: Seq[A]): Unit
 }

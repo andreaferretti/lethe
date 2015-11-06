@@ -3,25 +3,24 @@ package sync
 
 import boopickle.Default._
 
+import serialization.BooSerializer
 
-trait RecursivePathORAMProtocol[Id, Doc, Bin] extends PathORAMProtocol[Id, Doc] { self: BasicClient[Id, Doc] =>
+
+trait RecursivePathORAMProtocol[Id, Doc, Bin] extends PathORAMProtocol[Id, Doc] { self =>
   def bin(id: Id): Bin
   def emptyBin: Bin
   implicit def pickleId: Pickler[Id]
   implicit def pickleBin: Pickler[Bin]
   import Path.pathPickler
 
-  class InternalORAM extends LocalPathORAMProtocol[Bin, Map[Id, Path]] with BasicClient[Bin, Map[Id, Path]] {
+  class InternalORAM extends LocalPathORAMProtocol[Bin, Map[Id, Path]] {
     val Z = self.Z
     val L = self.L
     val emptyID = self.emptyBin
-    val remote = self.remote
+    implicit val pickle = implicitly[Pickler[(Bin, Map[Id, Path])]]
+    val client = self.client.withSerializer(new BooSerializer[(Bin, Map[Id, Path])])
     lazy val rng = self.rng
     val empty = Map.empty[Id, Path]
-    implicit val pickle = implicitly[Pickler[(Bin, Map[Id, Path])]]
-
-    def decryptBytes(a: Array[Byte]) = self.decryptBytes(a)
-    def encryptBytes(a: Array[Byte]) = self.encryptBytes(a)
   }
 
   val index = new InternalORAM

@@ -1,5 +1,5 @@
 package unicredit.oram
-package sync
+package sync.transport
 
 import org.zeromq.ZMQ
 
