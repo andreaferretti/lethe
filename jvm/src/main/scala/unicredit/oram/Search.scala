@@ -10,13 +10,14 @@ import boopickle.Default._
 import sync._
 import search._
 import transport._
+import client._
 
 
 object Search extends App {
   implicit val uuidPickler = transformPickler[UUID, String](_.toString, UUID.fromString)
 
   class IndexORAM(remote: Remote, passPhrase: String)
-    extends LocalPathORAMProtocol[String, Set[UUID]] {
+    extends AbstractLocalPathORAM[String, Set[UUID]] {
       val L = 8
       val Z = 4
       val rng = new SecureRandom
@@ -27,7 +28,7 @@ object Search extends App {
     }
 
   class DocumentORAM(remote: Remote, passPhrase: String)
-    extends LocalPathORAMProtocol[UUID, String] {
+    extends AbstractLocalPathORAM[UUID, String] {
       val L = 8
       val Z = 4
       val rng = new SecureRandom

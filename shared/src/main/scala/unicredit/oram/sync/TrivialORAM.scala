@@ -1,5 +1,7 @@
 package unicredit.oram.sync
 
+import client._
+
 
 class TrivialORAM[Id, Doc](val client: Client[(Id, Doc)], val empty: Doc) extends ORAM[Id, Doc] {
   // Note: There is no need to express read and write in terms of

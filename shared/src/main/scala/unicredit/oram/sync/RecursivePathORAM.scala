@@ -1,28 +1,65 @@
 package unicredit.oram
 package sync
 
-import java.security.SecureRandom
+import java.util.Random
 
 import boopickle.Default._
 
+import serialization.BooSerializer
 import transport.Remote
+import client._
 
 
-class RecursivePathORAM(remote: Remote, passPhrase: String)
-  extends RecursivePathORAMProtocol[Int, String, Int] {
+trait AbstractRecursivePathORAM[Id, Doc, Bin] extends PathORAM[Id, Doc] { self =>
+  def bin(id: Id): Bin
+  val emptyBin = bin(emptyID)
+  implicit def pickleId: Pickler[Id]
+  implicit def pickleBin: Pickler[Bin]
+  import Path.pathPickler
+  implicit val pickle = implicitly[Pickler[(Bin, Map[Id, Path])]]
 
-  val rng = new SecureRandom
+  val index = new LocalPathORAM[Bin, Map[Id, Path]](
+    client = client.withSerializer(new BooSerializer[(Bin, Map[Id, Path])]),
+    rng = rng,
+    emptyID = bin(emptyID),
+    empty = Map(),
+    L = L,
+    Z = Z
+  )
 
-  implicit val pickleId = implicitly[Pickler[Int]]
-  implicit val pickleBin = implicitly[Pickler[Int]]
-  implicit val pickle = generatePickler[(Int, String)]
-  val client = StandardClient[(Int, String)](remote, passPhrase)
+  override def getPosition(id: Id) =
+    index.read(bin(id)).getOrElse(id, Path.random(L))
 
-  def bin(x: Int) = x % 1024
+  override def putPosition(id: Id, path: Path) = {
+    val map  = index.read(bin(id)) + (id -> path)
+    index.write(bin(id), map)
+  }
+}
 
-  def empty = ""
-  def emptyID = -1
-  def emptyBin = -1
-  val L = 8
-  val Z = 4
+class RecursivePathORAM[Id, Doc, Bin](
+  val client: StandardClient[(Id, Doc)],
+  val rng: Random,
+  val emptyID: Id,
+  val empty: Doc,
+  val L: Int,
+  val Z: Int,
+  val bin1: Id => Bin
+)(implicit val pickleId: Pickler[Id], val pickleBin: Pickler[Bin]) extends AbstractRecursivePathORAM[Id, Doc, Bin] {
+  def bin(id: Id) = bin1(id)
+}
+
+object RecursivePathORAM {
+  import boopickle.Default._
+  import java.security.SecureRandom
+
+  def apply[Id, Doc, Bin](remote: Remote, passPhrase: String, emptyID: Id,
+    empty: Doc, L: Int, Z: Int, bin: Id => Bin)(implicit p1: Pickler[Id], p2: Pickler[Doc], p3: Pickler[Bin]) =
+      new RecursivePathORAM[Id, Doc, Bin](
+        StandardClient[(Id, Doc)](remote, passPhrase), new SecureRandom,
+        emptyID, empty, L, Z, bin
+      )
+
+  def default(remote: Remote, passPhrase: String) = apply[Int, String, Int](
+    remote, passPhrase, -1, "", 8, 4, _ % 1024
+  )
 }

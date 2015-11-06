@@ -1,5 +1,6 @@
 package unicredit.oram
 package sync
+package client
 
 import java.nio.ByteBuffer
 
