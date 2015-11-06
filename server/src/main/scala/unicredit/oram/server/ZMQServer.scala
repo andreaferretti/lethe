@@ -2,6 +2,7 @@ package unicredit.oram
 package server
 
 import scala.util.Try
+import java.io.File
 
 import org.zeromq.ZMQ
 
@@ -15,7 +16,8 @@ object ZMQServer extends App {
   socket.bind(url)
   println(s"Server ready on port $port")
 
-  val backend = new MemoryBackend
+  // val backend = new MemoryBackend
+  val backend = new LevelDBBackend(new File(s"db-$port"))
 
   while (true) {
     Message.fromBytes(socket.recv) match {

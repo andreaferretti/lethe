@@ -5,7 +5,7 @@ val zeromq = "org.zeromq" % "jeromq" % "0.3.5"
 val commonSettings = Seq(
   scalaVersion := "2.11.7",
   organization := "unicredit",
-  version := "0.1.0",
+  version := "0.1.1-SNAPSHOT",
   scalacOptions ++= Seq(
     "-deprecation",
     "-feature",
@@ -45,7 +45,12 @@ lazy val oramJS = oram.js
 
 lazy val oramServer = project.in(file("server"))
   .settings(commonSettings: _*)
-  .settings(libraryDependencies += zeromq)
+  .settings(
+    libraryDependencies ++= Seq(
+      zeromq,
+      "org.iq80.leveldb" % "leveldb" % "0.7"
+    )
+  )
   .dependsOn(messages.jvm)
 
 lazy val root = project.in(file(".")).aggregate(oramJVM, oramJS, oramServer)
