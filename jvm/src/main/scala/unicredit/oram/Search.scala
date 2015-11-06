@@ -45,10 +45,13 @@ object Search extends App {
   oram.init
   println("Done!")
 
-  for (document <- ls(file"examples")) {
-    println(s"Adding document $document")
-    store.addDocument(document.contentAsString)
-  }
+  // for (document <- ls(file"examples")) {
+  //   println(s"Adding document $document")
+  //   store.addDocument(document.contentAsString)
+  // }
+  println("Adding documents...")
+  val documents = ls(file"examples").map(_.contentAsString).toList
+  store.addDocuments(documents)
   println("Done!")
 
   while (true) {

@@ -22,6 +22,24 @@ trait DocumentStore[Doc, Term] {
     }
   }
 
+  def addDocuments(docs: Seq[Doc]) = {
+    val indexedDocs = docs map { d => (d, UUID.randomUUID) }
+    val docTermPairs = for {
+      (doc, uuid) <- indexedDocs
+      term <- chunker.chunks(doc)
+    } yield (term, uuid)
+    val docMap = docTermPairs groupBy (_._1) mapValues { pairs =>
+      pairs map (_._2)
+    }
+    for ((doc, uuid) <- indexedDocs) {
+      oram.write(uuid, doc)
+    }
+    for (term <- docMap.keys) {
+      val termDocs = index.read(term)
+      index.write(term, termDocs ++ docMap(term))
+    }
+  }
+
   def search(term: Term): Set[Doc] =
     index.read(term) map oram.read
 }
