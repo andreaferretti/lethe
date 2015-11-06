@@ -43,9 +43,9 @@ class RecursivePathORAM[Id, Doc, Bin](
   val empty: Doc,
   val L: Int,
   val Z: Int,
-  val bin1: Id => Bin
+  val binf: Id => Bin
 )(implicit val pickleId: Pickler[Id], val pickleBin: Pickler[Bin]) extends AbstractRecursivePathORAM[Id, Doc, Bin] {
-  def bin(id: Id) = bin1(id)
+  def bin(id: Id) = binf(id)
 }
 
 object RecursivePathORAM {
@@ -53,13 +53,13 @@ object RecursivePathORAM {
   import java.security.SecureRandom
 
   def apply[Id, Doc, Bin](remote: Remote, passPhrase: String, emptyID: Id,
-    empty: Doc, L: Int, Z: Int, bin: Id => Bin)(implicit p1: Pickler[Id], p2: Pickler[Doc], p3: Pickler[Bin]) =
+    empty: Doc, L: Int, Z: Int, bin: Id => Bin)
+    (implicit p1: Pickler[Id], p2: Pickler[Doc], p3: Pickler[Bin]) =
       new RecursivePathORAM[Id, Doc, Bin](
         StandardClient[(Id, Doc)](remote, passPhrase), new SecureRandom,
         emptyID, empty, L, Z, bin
       )
 
-  def default(remote: Remote, passPhrase: String) = apply[Int, String, Int](
-    remote, passPhrase, -1, "", 8, 4, _ % 1024
-  )
+  def default(remote: Remote, passPhrase: String, L: Int = 8, Z: Int = 4) =
+    apply[Int, String, Int](remote, passPhrase, -1, "", L, Z, _ % 1024)
 }

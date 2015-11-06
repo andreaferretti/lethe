@@ -33,7 +33,6 @@ object LocalPathORAM {
   def apply[Id, Doc](remote: Remote, passPhrase: String, emptyID: Id, empty: Doc, L: Int, Z: Int)(implicit picker: Pickler[(Id, Doc)]) =
     new LocalPathORAM(StandardClient[(Id, Doc)](remote, passPhrase), new SecureRandom, emptyID, empty, L, Z)
 
-    def default(remote: Remote, passPhrase: String) = apply[Int, String](
-      remote, passPhrase, -1, "", 8, 4
-    )
+  def default(remote: Remote, passPhrase: String, L: Int = 8, Z: Int = 4) =
+    apply[Int, String](remote, passPhrase, -1, "", L, Z)
 }
