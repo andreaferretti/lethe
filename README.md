@@ -17,25 +17,23 @@ server. A trivial example is `MemoryRemote`, that just keeps the blocks in
 memory without sending them at all. Alternatively, `ZMQRemote` talks to an
 actual remote ZeroMQ server.
 
-A `Client` has access to a `Remote` and is able to send pairs of an `Id` and
-a `Doc` to it. In order to do this, it needs to be able to serialize those
-pairs and encrypt them. The trait `BasicClient` uses BooPickle to handle
-serialization in a generic manner and can be extended to just add the
-encryption and decryption functionality. On top of it, there are an example
-`UnencryptedClient` (that encrypts as the identity) and an actual `AESClient`.
+A `Serializer[A]` is used to convert between and `Array[Byte]` and back;
+by default we use BooPickle to handle this.
 
-An `ORAMProtocol` is a particular `Client` that communicates to a server
+A `Crypter` handles encryptions and decryption, working at the byte array
+level. An example is the `AESCrypter`.
+
+A `Client[A]` has access to all of them, and used this to talk to the server,
+sending and receiving encrypted instances of `A`. In particular,
+`StandardClient[A]` just puts together the three.
+
+An `ORAM` has access to a `Client` that communicates to a server
 and makes sure that one can read or write instances of `Doc`, indexed by `Id`.
-The `TrivialORAMProtocol` does this by always reading and writing back all
+The `TrivialORAM` does this by always reading and writing back all
 documents for all operations.
 
-`PathORAMProtocol` does this by implementing the actual Path ORAM construction.
+`PathORAM` does this by implementing the actual Path ORAM construction.
 The index that maps each `Id` to the relative `Path` is kept abstract in
-order to handle recursion. In `LocalPathORAMProtocol`, we specialize the index
-to be a local `Map[Id, Path]`, while `RecursivePathORAMProtocol` stores the
+order to handle recursion. In `LocalPathORAM`, we specialize the index
+to be a local `Map[Id, Path]`, while `RecursivePathORAM` stores the
 index as an ORAM itself.
-
-To get an actual `ORAM` one has to provide a concrete `ORAMProtocol`, with all
-parameters specified, and a concrete `Client`, attached to a particular
-`Remote`. Examples of this are `UnsafeORAM` - that uses all the trivial
-constructions - and the actual `RecursivePathORAM`.
