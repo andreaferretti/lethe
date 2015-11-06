@@ -55,7 +55,8 @@ object Search extends App {
     println("Lookup a word:")
     val word = StdIn.readLine.trim
     val docs = store.search(word)
-    for (doc <- docs) {
+    for ((doc, i) <- docs.zipWithIndex) {
+      println(s"====Document $i====")
       println(doc.take(200) + "...")
     }
   }
