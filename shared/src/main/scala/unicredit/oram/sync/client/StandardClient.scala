@@ -5,7 +5,7 @@ package client
 import java.nio.ByteBuffer
 
 import serialization.{ Serializer, BooSerializer }
-import crypto.{ Crypter, AESCrypter }
+import crypto.{ Crypter, AESCrypter, AESMaterial }
 import transport.Remote
 
 
@@ -40,6 +40,13 @@ object StandardClient {
     new StandardClient[A](
       new BooSerializer[A],
       AESCrypter(passPhrase),
+      remote
+    )
+
+  def apply[A](remote: Remote, material: AESMaterial)(implicit pickler: Pickler[A]) =
+    new StandardClient[A](
+      new BooSerializer[A],
+      AESCrypter(material),
       remote
     )
 }
