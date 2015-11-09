@@ -39,7 +39,7 @@ object StandardClient {
   def apply[A](remote: Remote, passPhrase: String)(implicit pickler: Pickler[A]) =
     new StandardClient[A](
       new BooSerializer[A],
-      new AESCrypter(passPhrase),
+      AESCrypter(passPhrase),
       remote
     )
 }
