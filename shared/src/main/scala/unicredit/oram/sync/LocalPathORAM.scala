@@ -18,25 +18,27 @@ trait AbstractLocalPathORAM[K, V, Id <: K, Doc <: V] extends PathORAM[K, V, Id, 
   }
 }
 
-class LocalPathORAM[K, V, Id <: K, Doc <: V](
+class LocalPathORAM[K, V, Id <: K : Pointed, Doc <: V : Pointed](
   val client: StandardClient[(K, V)],
   val stash: Stash[K, V],
   val rng: Random,
-  val emptyID: Id,
-  val empty: Doc,
   val L: Int,
   val Z: Int
-) extends AbstractLocalPathORAM[K, V, Id, Doc]
+) extends AbstractLocalPathORAM[K, V, Id, Doc] {
+  val empty = implicitly[Pointed[Doc]].empty
+  val emptyID = implicitly[Pointed[Id]].empty
+}
 
 object LocalPathORAM {
   import boopickle.Default._
   import java.security.SecureRandom
 
-  def apply[K, V, Id <: K, Doc <: V](
+  implicit val pint = Pointed(-1)
+  implicit val pstring = Pointed("")
+
+  def apply[K, V, Id <: K : Pointed, Doc <: V : Pointed](
     remote: Remote,
     passPhrase: String,
-    emptyID: Id,
-    empty: Doc,
     L: Int,
     Z: Int
   )(implicit picker: Pickler[(K, V)]) =
@@ -44,11 +46,9 @@ object LocalPathORAM {
       StandardClient[(K, V)](remote, passPhrase),
       MapStash.empty[K, V],
       new SecureRandom,
-      emptyID,
-      empty,
       L,
       Z)
 
   def default(remote: Remote, passPhrase: String, L: Int = 8, Z: Int = 4) =
-    apply[Int, String, Int, String](remote, passPhrase, -1, "", L, Z)
+    apply[Int, String, Int, String](remote, passPhrase, L, Z)
 }

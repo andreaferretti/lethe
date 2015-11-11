@@ -15,21 +15,17 @@ import client._
 
 object Search extends App {
   implicit val uuidPickler = transformPickler[UUID, String](_.toString, UUID.fromString)
+  implicit val pint = Pointed(-1)
+  implicit val pstring = Pointed("")
+  implicit val puuid = Pointed(UUID.fromString("16b01bbe-484b-49e8-85c5-f424a983205f"))
+  implicit val puuidset = Pointed(Set.empty[UUID])
 
-  val (index, oram) = MultiORAM.pair[
-    String,
-    Set[UUID],
-    UUID,
-    String
-  ](
+  val (index, oram) = MultiORAM.pair[String, Set[UUID], UUID, String](
     remote = ZMQRemote("tcp://localhost:8888"),
     passPhrase = "Hello my friend",
-    emptyID = "",
-    empty = Set.empty[UUID],
-    emptyID1 = UUID.fromString("16b01bbe-484b-49e8-85c5-f424a983205f"),
-    empty1 = "",
     L = 8,
-    Z = 4)
+    Z = 4
+  )
 
   val store = new BasicStore(index, oram)
 

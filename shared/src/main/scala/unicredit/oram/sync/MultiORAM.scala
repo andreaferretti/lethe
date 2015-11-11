@@ -9,7 +9,7 @@ import storage._
 
 
 class LeftMultiORAM[Id, Doc, Id1, Doc1] (
-  inner: LocalPathORAM[Either[Id, Id1], Either[Doc, Doc1], Left[Id, Id1], Left[Doc, Doc1]]
+  inner: PathORAM[Either[Id, Id1], Either[Doc, Doc1], Left[Id, Id1], Left[Doc, Doc1]]
 ) extends ORAM[Id, Doc] {
   override def empty = inner.empty.left.get
 
@@ -21,7 +21,7 @@ class LeftMultiORAM[Id, Doc, Id1, Doc1] (
 }
 
 class RightMultiORAM[Id, Doc, Id1, Doc1] (
-  inner: LocalPathORAM[Either[Id, Id1], Either[Doc, Doc1], Right[Id, Id1], Right[Doc, Doc1]]
+  inner: PathORAM[Either[Id, Id1], Either[Doc, Doc1], Right[Id, Id1], Right[Doc, Doc1]]
 ) extends ORAM[Id1, Doc1] {
   override def empty = inner.empty.right.get
 
@@ -32,54 +32,51 @@ class RightMultiORAM[Id, Doc, Id1, Doc1] (
   override def init = ()
 }
 
+
 object MultiORAM {
   import boopickle.Default._
   import java.security.SecureRandom
 
 
-  def left[Id, Doc, Id1, Doc1](
+  def left[Id: Pointed, Doc: Pointed, Id1, Doc1](
     client: StandardClient[(Either[Id, Id1], Either[Doc, Doc1])],
     stash: Stash[Either[Id, Id1], Either[Doc, Doc1]],
     rng: Random,
-    emptyID: Id,
-    empty: Doc,
     L: Int,
     Z: Int
   ): ORAM[Id, Doc] = {
+      implicit val p1 = Pointed(Left[Id, Id1](implicitly[Pointed[Id]].empty))
+      implicit val p2 = Pointed(Left[Doc, Doc1](implicitly[Pointed[Doc]].empty))
       val inner = new LocalPathORAM[
         Either[Id, Id1],
         Either[Doc, Doc1],
         Left[Id, Id1],
-        Left[Doc, Doc1]](client, stash, rng, Left(emptyID), Left(empty), L, Z)
+        Left[Doc, Doc1]](client, stash, rng, L, Z)
 
       new LeftMultiORAM(inner)
     }
 
-  def right[Id, Doc, Id1, Doc1](
+  def right[Id, Doc, Id1: Pointed, Doc1: Pointed](
     client: StandardClient[(Either[Id, Id1], Either[Doc, Doc1])],
     stash: Stash[Either[Id, Id1], Either[Doc, Doc1]],
     rng: Random,
-    emptyID: Id1,
-    empty: Doc1,
     L: Int,
     Z: Int
   ): ORAM[Id1, Doc1] = {
+      implicit val p1 = Pointed(Right[Id, Id1](implicitly[Pointed[Id1]].empty))
+      implicit val p2 = Pointed(Right[Doc, Doc1](implicitly[Pointed[Doc1]].empty))
       val inner = new LocalPathORAM[
         Either[Id, Id1],
         Either[Doc, Doc1],
         Right[Id, Id1],
-        Right[Doc, Doc1]](client, stash, rng, Right(emptyID), Right(empty), L, Z)
+        Right[Doc, Doc1]](client, stash, rng, L, Z)
 
       new RightMultiORAM(inner)
     }
 
-  def pair[Id, Doc, Id1, Doc1](
+  def pair[Id: Pointed, Doc: Pointed, Id1: Pointed, Doc1: Pointed](
     remote: Remote,
     passPhrase: String,
-    emptyID: Id,
-    empty: Doc,
-    emptyID1: Id1,
-    empty1: Doc1,
     L: Int,
     Z: Int
   )(implicit p1: Pickler[Id],
@@ -92,8 +89,8 @@ object MultiORAM {
     val rng = new SecureRandom
 
     (
-      left[Id, Doc, Id1, Doc1](client, stash, rng, emptyID, empty, L, Z),
-      right[Id, Doc, Id1, Doc1](client, stash, rng, emptyID1, empty1, L, Z)
+      left[Id, Doc, Id1, Doc1](client, stash, rng, L, Z),
+      right[Id, Doc, Id1, Doc1](client, stash, rng, L, Z)
     )
   }
 }
