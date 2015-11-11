@@ -18,31 +18,15 @@
 //     Right[Map[Id, Path], Doc]
 //   ] {
 //   def bin(id: Id): Bin
-//   // val emptyBin = bin(emptyID)
-//   // implicit def pickleId: Pickler[Id]
-//   // implicit def pickleBin: Pickler[Bin]
-//   // import Path.pathPickler
-//   // implicit val pickle = implicitly[Pickler[(Bin, Map[Id, Path])]]
-//
-//   // def index: ORAM[Bin, Map[Id, Path]]
-//
-//   // val index = new LocalPathORAM[Bin, Map[Id, Path]](
-//   //   client = client.withSerializer(new BooSerializer[(Bin, Map[Id, Path])]),
-//   //   rng = rng,
-//   //   emptyID = bin(emptyID),
-//   //   empty = Map(),
-//   //   L = L,
-//   //   Z = Z
-//   // )
 //
 //   val stash = MapStash.empty[Either[Bin, Id], Either[Map[Id, Path], Doc]]
+//   implicit val pbin = Pointed(bin(emptyID.right.get))
+//   implicit val pmap = Pointed(Map.empty[Id, Path])
 //
 //   val index = MultiORAM.left[Bin, Map[Id, Path], Id, Doc](
 //     client = client,
 //     stash = stash,
 //     rng = rng,
-//     emptyID = bin(emptyID.right.get),
-//     empty = Map(),
 //     L = L,
 //     Z = Z
 //   )
@@ -56,18 +40,16 @@
 //   }
 // }
 //
-// class RecursivePathORAM[Id, Doc, Bin](
+// class RecursivePathORAM[Id: Pointed, Doc: Pointed, Bin](
 //   val client: StandardClient[(Either[Bin, Id], Either[Map[Id, Path], Doc])],
 //   val rng: Random,
-//   emptyID1: Id,
-//   empty1: Doc,
 //   val L: Int,
 //   val Z: Int,
 //   val binf: Id => Bin
 // )(implicit val pickleId: Pickler[Id], val pickleBin: Pickler[Bin]) extends AbstractRecursivePathORAM[Id, Doc, Bin] {
 //   def bin(id: Id) = binf(id)
-//   val emptyID = Right(emptyID1)
-//   val empty = Right(empty1)
+//   val empty = Right[Map[Id, Path], Doc](implicitly[Pointed[Doc]].empty)
+//   val emptyID = Right[Bin, Id](implicitly[Pointed[Id]].empty)
 // }
 //
 // object RecursivePathORAM {
@@ -75,14 +57,20 @@
 //   import java.security.SecureRandom
 //   import Path.pathPickler
 //
-//   def apply[Id, Doc, Bin](remote: Remote, passPhrase: String, emptyID: Id,
-//     empty: Doc, L: Int, Z: Int, bin: Id => Bin)
-//     (implicit p1: Pickler[Id], p2: Pickler[Doc], p3: Pickler[Bin]) =
-//       new RecursivePathORAM[Id, Doc, Bin](
-//         StandardClient[(Either[Bin, Id], Either[Map[Id, Path], Doc])](remote, passPhrase), new SecureRandom,
-//         emptyID, empty, L, Z, bin
-//       )
+//   implicit val pint = Pointed(-1)
+//   implicit val pstring = Pointed("")
+//
+//   def apply[Id: Pointed: Pickler, Doc: Pointed: Pickler, Bin: Pickler](
+//     remote: Remote,
+//     passPhrase: String,
+//     L: Int,
+//     Z: Int,
+//     bin: Id => Bin
+//   ) = new RecursivePathORAM[Id, Doc, Bin](
+//     StandardClient[(Either[Bin, Id], Either[Map[Id, Path], Doc])](remote, passPhrase),
+//     new SecureRandom, L, Z, bin
+//   )
 //
 //   def default(remote: Remote, passPhrase: String, L: Int = 8, Z: Int = 4) =
-//     apply[Int, String, Int](remote, passPhrase, -1, "", L, Z, _ % 1024)
+//     apply[Int, String, Int](remote, passPhrase, L, Z, _ % 1024)
 // }
