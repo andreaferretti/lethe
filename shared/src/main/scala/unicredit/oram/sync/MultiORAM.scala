@@ -37,7 +37,6 @@ object MultiORAM {
   import boopickle.Default._
   import java.security.SecureRandom
 
-
   def left[Id: Pointed, Doc: Pointed, Id1, Doc1](
     client: StandardClient[(Either[Id, Id1], Either[Doc, Doc1])],
     stash: Stash[Either[Id, Id1], Either[Doc, Doc1]],
@@ -74,16 +73,12 @@ object MultiORAM {
       new RightMultiORAM(inner)
     }
 
-  def pair[Id: Pointed, Doc: Pointed, Id1: Pointed, Doc1: Pointed](
-    remote: Remote,
-    passPhrase: String,
-    L: Int,
-    Z: Int
-  )(implicit p1: Pickler[Id],
-    p2: Pickler[Doc],
-    p3: Pickler[Id1],
-    p4: Pickler[Doc1]
-  ) = {
+  def pair[
+    Id: Pointed: Pickler,
+    Doc: Pointed: Pickler,
+    Id1: Pointed: Pickler,
+    Doc1: Pointed: Pickler
+  ](remote: Remote, passPhrase: String, L: Int, Z: Int) = {
     val client = StandardClient[(Either[Id, Id1], Either[Doc, Doc1])](remote, passPhrase)
     val stash = MapStash.empty[Either[Id, Id1], Either[Doc, Doc1]]
     val rng = new SecureRandom
