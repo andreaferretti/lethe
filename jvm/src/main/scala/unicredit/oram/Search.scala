@@ -47,13 +47,17 @@ object Search extends App {
   store.addDocuments(documents)
   println("Done!")
 
-  while (true) {
+  var keepGoing = true
+  while (keepGoing) {
     println("Lookup a word:")
     val word = StdIn.readLine.trim
-    val docs = store.search(word)
-    for ((doc, i) <- docs.zipWithIndex) {
-      println(s"====Document $i====")
-      println(doc.take(200) + "...")
+    if (word == "") { keepGoing = false }
+    else {
+      val docs = store.search(word)
+      for ((doc, i) <- docs.zipWithIndex) {
+        println(s"====Document $i====")
+        println(doc.take(200) + "...")
+      }
     }
   }
 }

@@ -5,6 +5,7 @@ import java.util.Random
 
 import transport.Remote
 import client._
+import storage._
 
 
 class LeftMultiORAM[Id, Doc, Id1, Doc1] (
@@ -38,6 +39,7 @@ object MultiORAM {
 
   def left[Id, Doc, Id1, Doc1](
     client: StandardClient[(Either[Id, Id1], Either[Doc, Doc1])],
+    stash: Stash[Either[Id, Id1], Either[Doc, Doc1]],
     rng: Random,
     emptyID: Id,
     empty: Doc,
@@ -48,13 +50,14 @@ object MultiORAM {
         Either[Id, Id1],
         Either[Doc, Doc1],
         Left[Id, Id1],
-        Left[Doc, Doc1]](client, rng, Left(emptyID), Left(empty), L, Z)
+        Left[Doc, Doc1]](client, stash, rng, Left(emptyID), Left(empty), L, Z)
 
       new LeftMultiORAM(inner)
     }
 
   def right[Id, Doc, Id1, Doc1](
     client: StandardClient[(Either[Id, Id1], Either[Doc, Doc1])],
+    stash: Stash[Either[Id, Id1], Either[Doc, Doc1]],
     rng: Random,
     emptyID: Id1,
     empty: Doc1,
@@ -65,7 +68,7 @@ object MultiORAM {
         Either[Id, Id1],
         Either[Doc, Doc1],
         Right[Id, Id1],
-        Right[Doc, Doc1]](client, rng, Right(emptyID), Right(empty), L, Z)
+        Right[Doc, Doc1]](client, stash, rng, Right(emptyID), Right(empty), L, Z)
 
       new RightMultiORAM(inner)
     }
@@ -85,11 +88,12 @@ object MultiORAM {
     p4: Pickler[Doc1]
   ) = {
     val client = StandardClient[(Either[Id, Id1], Either[Doc, Doc1])](remote, passPhrase)
+    val stash = MapStash.empty[Either[Id, Id1], Either[Doc, Doc1]]
     val rng = new SecureRandom
 
     (
-      left[Id, Doc, Id1, Doc1](client, rng, emptyID, empty, L, Z),
-      right[Id, Doc, Id1, Doc1](client, rng, emptyID1, empty1, L, Z)
+      left[Id, Doc, Id1, Doc1](client, stash, rng, emptyID, empty, L, Z),
+      right[Id, Doc, Id1, Doc1](client, stash, rng, emptyID1, empty1, L, Z)
     )
   }
 }

@@ -4,6 +4,7 @@ package sync
 import java.util.Random
 
 import client._
+import storage._
 
 
 trait PathORAM[K, V, Id <: K, Doc <: V] extends ORAM[Id, Doc] {
@@ -13,7 +14,8 @@ trait PathORAM[K, V, Id <: K, Doc <: V] extends ORAM[Id, Doc] {
   def L: Int
   def Z: Int
   def emptyID: Id
-  var stash = Map.empty[K, V]
+  // var stash = Map.empty[K, V]
+  def stash: Stash[K, V]
 
   def getPosition(id: K): Path
   def putPosition(id: K, path: Path): Unit
@@ -47,12 +49,12 @@ trait PathORAM[K, V, Id <: K, Doc <: V] extends ORAM[Id, Doc] {
     }
     val data = stash.getOrElse(id, empty)
     if (op == Write) {
-      stash += (id -> doc)
+      stash ++= List(id -> doc)
     }
-    stash = stash filter { case (a, _) => a != emptyID }
+    stash filter { case (a, _) => a != emptyID }
     for (ℓ <- (0 to L).reverse) {
-      var stash_ = stash filter { case (a, _) => x.take(ℓ) == getPosition(a).take(ℓ) }
-      stash_ = stash_ take Z
+      val stash_ = stash.take(Z){ case (a, _) => x.take(ℓ) == getPosition(a).take(ℓ) }
+      // stash_ = stash_ take Z
       stash --= stash_.keySet
       putBucket(x, ℓ, stash_.toSeq)
     }
