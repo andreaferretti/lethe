@@ -14,7 +14,7 @@ object Main extends App {
       "cippa lippa"
     ))).flatten.zipWithIndex map flip
   val remote = new ZMQRemote("tcp://localhost:8888")
-  val oram = RecursivePathORAM.default(remote, "Hello world")
+  val oram = LocalPathORAM.default(remote, "Hello world")
 
   println("starting initialization...")
   oram.init

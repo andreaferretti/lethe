@@ -25,3 +25,7 @@ class ZMQRemote(url: String) extends Remote {
 
   def init(d: Seq[Array[Byte]]) = tell(Init(d))
 }
+
+object ZMQRemote {
+  def apply(url: String) = new ZMQRemote(url)
+}

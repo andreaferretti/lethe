@@ -6,17 +6,17 @@ import java.util.Random
 import client._
 
 
-trait PathORAM[Id, Doc] extends ORAM[Id, Doc] {
-  type Bucket = Seq[(Id, Doc)]
-  def client: StandardClient[(Id, Doc)]
+trait PathORAM[K, V, Id <: K, Doc <: V] extends ORAM[Id, Doc] {
+  type Bucket = Seq[(K, V)]
+  def client: StandardClient[(K, V)]
   implicit def rng: Random
   def L: Int
   def Z: Int
   def emptyID: Id
-  var stash = Map.empty[Id, Doc]
+  var stash = Map.empty[K, V]
 
-  def getPosition(id: Id): Path
-  def putPosition(id: Id, path: Path): Unit
+  def getPosition(id: K): Path
+  def putPosition(id: K, path: Path): Unit
 
   override def read(id: Id) = access(Read, id, empty)
 
@@ -56,7 +56,7 @@ trait PathORAM[Id, Doc] extends ORAM[Id, Doc] {
       stash --= stash_.keySet
       putBucket(x, ℓ, stash_.toSeq)
     }
-    data
+    data.asInstanceOf[Doc]
   }
 
   def init: Unit = {

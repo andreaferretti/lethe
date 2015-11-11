@@ -16,32 +16,20 @@ import client._
 object Search extends App {
   implicit val uuidPickler = transformPickler[UUID, String](_.toString, UUID.fromString)
 
-  class IndexORAM(remote: Remote, passPhrase: String)
-    extends AbstractLocalPathORAM[String, Set[UUID]] {
-      val L = 8
-      val Z = 4
-      val rng = new SecureRandom
-      val empty = Set.empty[UUID]
-      val emptyID = ""
-      val pickle = generatePickler[(String, Set[UUID])]
-      val client = StandardClient[(String, Set[UUID])](remote, passPhrase)
-    }
-
-  class DocumentORAM(remote: Remote, passPhrase: String)
-    extends AbstractLocalPathORAM[UUID, String] {
-      val L = 8
-      val Z = 4
-      val rng = new SecureRandom
-      val empty = ""
-      val emptyID = UUID.fromString("16b01bbe-484b-49e8-85c5-f424a983205f")
-      val pickle = generatePickler[(UUID, String)]
-      val client = StandardClient[(UUID, String)](remote, passPhrase)
-    }
-
-  val remote1 = new ZMQRemote("tcp://localhost:8888")
-  val remote2 = new ZMQRemote("tcp://localhost:8889")
-  val index = new IndexORAM(remote1, "Hello my friend")
-  val oram = new DocumentORAM(remote2, "Hello world")
+  val (index, oram) = MultiORAM.pair[
+    String,
+    Set[UUID],
+    UUID,
+    String
+  ](
+    remote = ZMQRemote("tcp://localhost:8888"),
+    passPhrase = "Hello my friend",
+    emptyID = "",
+    empty = Set.empty[UUID],
+    emptyID1 = UUID.fromString("16b01bbe-484b-49e8-85c5-f424a983205f"),
+    empty1 = "",
+    L = 8,
+    Z = 4)
 
   val store = new BasicStore(index, oram)
 

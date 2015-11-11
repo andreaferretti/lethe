@@ -18,6 +18,8 @@ class TrivialORAM[Id, Doc](val client: Client[(Id, Doc)], val empty: Doc) extend
     add(id, doc)
   }
 
+  override def init = ()
+
   def readAndRemove(id: Id) = {
     val n = client.capacity
     var result: Doc = empty
