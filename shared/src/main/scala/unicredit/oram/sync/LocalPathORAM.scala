@@ -36,18 +36,17 @@ object LocalPathORAM {
   implicit val pint = Pointed(-1)
   implicit val pstring = Pointed("")
 
-  def apply[K, V, Id <: K : Pointed, Doc <: V : Pointed](
+  def apply[K: Pickler, V: Pickler, Id <: K : Pointed, Doc <: V : Pointed](
     remote: Remote,
     passPhrase: String,
     L: Int,
     Z: Int
-  )(implicit picker: Pickler[(K, V)]) =
-    new LocalPathORAM(
-      StandardClient[(K, V)](remote, passPhrase),
-      MapStash.empty[K, V],
-      new SecureRandom,
-      L,
-      Z)
+  ) = new LocalPathORAM(
+    StandardClient[(K, V)](remote, passPhrase),
+    MapStash.empty[K, V],
+    new SecureRandom,
+    L,
+    Z)
 
   def default(remote: Remote, passPhrase: String, L: Int = 8, Z: Int = 4) =
     apply[Int, String, Int, String](remote, passPhrase, L, Z)
