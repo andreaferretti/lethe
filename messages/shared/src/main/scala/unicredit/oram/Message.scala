@@ -9,7 +9,7 @@ sealed trait Message
 case class Capacity() extends Message
 case class Fetch(n: Int) extends Message
 case class Put(n: Int, doc: Array[Byte]) extends Message
-case class Init(data: Seq[Array[Byte]]) extends Message
+case class Init(data: Seq[Array[Byte]], start: Int) extends Message
 
 
 object Message {

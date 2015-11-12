@@ -23,7 +23,7 @@ class ZMQRemote(url: String) extends Remote {
 
   def put(n: Int, a: Array[Byte]) = tell(Put(n, a))
 
-  def init(d: Seq[Array[Byte]]) = tell(Init(d))
+  def init(d: Seq[Array[Byte]], start: Int) = tell(Init(d, start))
 }
 
 object ZMQRemote {

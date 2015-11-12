@@ -26,8 +26,8 @@ object ZMQServer extends App {
       case Put(n, doc) =>
         backend.put(n, doc)
         socket.send("ok")
-      case Init(data) =>
-        backend.init(data)
+      case Init(data, start) =>
+        backend.init(data, start)
         socket.send("ok")
     }
   }

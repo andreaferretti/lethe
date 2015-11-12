@@ -22,11 +22,11 @@ class StandardClient[A](
   override def putClear(n: Int, data: A) =
     remote.put(n, crypter.encrypt(serializer.encode(data)))
 
-  override def init(data: Seq[A]) = {
+  override def init(data: Seq[A], start: Int) = {
     val bytes = data map { d =>
       crypter.encrypt(serializer.encode(d))
     }
-    remote.init(bytes)
+    remote.init(bytes, start)
   }
 
   def withSerializer[B](s: Serializer[B]) =

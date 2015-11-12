@@ -8,5 +8,5 @@ trait Remote {
 
   def put(n: Int, a: Array[Byte]): Unit
 
-  def init(a: Seq[Array[Byte]]): Unit
+  def init(a: Seq[Array[Byte]], start: Int): Unit
 }

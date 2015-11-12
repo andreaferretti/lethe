@@ -22,12 +22,12 @@ class LevelDBBackend(file: File) extends Backend {
   }
   override def fetch(n: Int) = db.get(Bytes(n))
   override def put(n: Int, a: Array[Byte]) = { db.put(Bytes(n), a) }
-  override def init(d: Seq[Array[Byte]]) = {
+  override def init(d: Seq[Array[Byte]], start: Int) = {
     val batch = db.createWriteBatch
     for ((a, n) <- d.zipWithIndex) {
-      db.put(Bytes(n), a)
+      db.put(Bytes(n + start), a)
     }
     db.write(batch)
-    capacityCache = d.length
+    capacityCache = 0
   }
 }
