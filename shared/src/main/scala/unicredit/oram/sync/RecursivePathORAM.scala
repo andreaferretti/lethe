@@ -79,7 +79,7 @@ object RecursivePathORAM {
   ) = {
     val rng = new SecureRandom
     val index = ORAMIndex.local[Id, Bin](
-      remote, passPhrase, L, Z, offset + pow(2, L + 1), bin)
+      remote, passPhrase, L, Z, offset + pow(2, L + 1) - 1, bin)
     val client = StandardClient[(Id, Doc)](remote, passPhrase)
     val stash = MapStash.empty[Id, Doc]
 

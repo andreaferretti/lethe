@@ -65,6 +65,7 @@ trait PathORAM[K, V, Id <: K, Doc <: V] extends ORAM[Id, Doc] {
   def init: Unit = {
     val numBuckets = (pow(2, L + 1) - 1) * Z
     val items = (0 until numBuckets) map { _ => (emptyID, empty) }
+
     client.init(items, offset * Z)
   }
 }

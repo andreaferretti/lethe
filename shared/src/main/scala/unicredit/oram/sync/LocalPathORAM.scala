@@ -14,6 +14,11 @@ trait AbstractLocalPathORAM[K, V, Id <: K, Doc <: V] extends PathORAM[K, V, Id, 
   override def getPosition(id: K) = index.getPosition(id)
 
   override def putPosition(id: K, path: Path) = index.putPosition(id, path)
+
+  override def init = {
+    super.init
+    index.init
+  }
 }
 
 class LocalPathORAM[K, V, Id <: K : Pointed, Doc <: V : Pointed](

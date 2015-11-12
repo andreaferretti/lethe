@@ -12,6 +12,7 @@ class MapIndex[Id](L: Int)(implicit rng: Random) extends Index[Id] {
   override def putPosition(id: Id, path: Path) = {
     index += (id -> path)
   }
+  override def init = ()
 }
 
 object MapIndex {
