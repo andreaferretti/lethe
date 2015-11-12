@@ -9,8 +9,8 @@ class MapIndex[Id](L: Int)(implicit rng: Random) extends Index[Id] {
 
   override def getPosition(id: Id) =
     index.getOrElse(id, Path.random(L))
-  override def putPosition(id: Id, path: Path) = {
-    index += (id -> path)
+  override def putRandom(id: Id) = {
+    index += (id -> Path.random(L))
   }
   override def init = ()
 }

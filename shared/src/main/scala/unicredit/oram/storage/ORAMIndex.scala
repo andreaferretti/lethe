@@ -12,9 +12,9 @@ class ORAMIndex[Id, Bin](oram: ORAM[Bin, Map[Id, Path]], L: Int, bin: Id => Bin)
 
   override def getPosition(id: Id) =
     oram.read(bin(id)).getOrElse(id, Path.random(L))
-  override def putPosition(id: Id, path: Path) = {
+  override def putRandom(id: Id) = {
     val b = bin(id)
-    val map  = oram.read(b) + (id -> path)
+    val map  = oram.read(b) + (id -> Path.random(L))
     oram.write(b, map)
   }
   override def init = oram.init

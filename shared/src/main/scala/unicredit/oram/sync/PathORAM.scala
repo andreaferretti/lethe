@@ -1,8 +1,6 @@
 package unicredit.oram
 package sync
 
-import java.util.Random
-
 import client._
 import storage._
 import transport.Remote
@@ -12,7 +10,6 @@ class PathORAM[K, V, Id <: K : Pointed, Doc <: V : Pointed](
   client: StandardClient[(K, V)],
   stash: Stash[K, V],
   index: Index[K],
-  rng: Random,
   L: Int,
   Z: Int,
   offset: Int
@@ -43,7 +40,7 @@ class PathORAM[K, V, Id <: K : Pointed, Doc <: V : Pointed](
 
   def access(op: Op, id: Id, doc: Doc) = {
     val x = index.getPosition(id)
-    index.putPosition(id, Path.random(L)(rng))
+    index.putRandom(id)
     for (ℓ <- 0 to L) {
       stash ++= fetchBucket(x, ℓ)
     }
@@ -85,7 +82,7 @@ object PathORAM {
     val rng = new SecureRandom
 
     new PathORAM(StandardClient[(K, V)](remote, passPhrase),
-      MapStash.empty[K, V], MapIndex[K](L)(rng), rng, L, Z, offset)
+      MapStash.empty[K, V], MapIndex[K](L)(rng), L, Z, offset)
   }
 
   def recursive[Id: Pointed: Pickler, Doc: Pointed: Pickler, Bin: Pointed: Pickler](
@@ -102,6 +99,6 @@ object PathORAM {
     val client = StandardClient[(Id, Doc)](remote, passPhrase)
     val stash = MapStash.empty[Id, Doc]
 
-    new PathORAM[Id, Doc, Id, Doc](client, stash, index, rng, L, Z, offset)
+    new PathORAM[Id, Doc, Id, Doc](client, stash, index, L, Z, offset)
   }
 }

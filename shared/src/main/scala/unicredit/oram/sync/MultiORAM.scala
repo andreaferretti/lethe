@@ -37,7 +37,6 @@ object MultiORAM {
     client: StandardClient[(Either[Id, Id1], Either[Doc, Doc1])],
     stash: Stash[Either[Id, Id1], Either[Doc, Doc1]],
     index: Index[Either[Id, Id1]],
-    rng: Random,
     L: Int,
     Z: Int,
     offset: Int
@@ -48,7 +47,7 @@ object MultiORAM {
         Either[Id, Id1],
         Either[Doc, Doc1],
         Left[Id, Id1],
-        Left[Doc, Doc1]](client, stash, index, rng, L, Z, offset)
+        Left[Doc, Doc1]](client, stash, index, L, Z, offset)
 
       new LeftMultiORAM(inner)
     }
@@ -57,7 +56,6 @@ object MultiORAM {
     client: StandardClient[(Either[Id, Id1], Either[Doc, Doc1])],
     stash: Stash[Either[Id, Id1], Either[Doc, Doc1]],
     index: Index[Either[Id, Id1]],
-    rng: Random,
     L: Int,
     Z: Int,
     offset: Int
@@ -68,7 +66,7 @@ object MultiORAM {
         Either[Id, Id1],
         Either[Doc, Doc1],
         Right[Id, Id1],
-        Right[Doc, Doc1]](client, stash, index, rng, L, Z, offset)
+        Right[Doc, Doc1]](client, stash, index, L, Z, offset)
 
       new RightMultiORAM(inner)
     }
@@ -85,8 +83,8 @@ object MultiORAM {
     val index = MapIndex[Either[Id, Id1]](L)(rng)
 
     (
-      left[Id, Doc, Id1, Doc1](client, stash, index, rng, L, Z, offset),
-      right[Id, Doc, Id1, Doc1](client, stash, index, rng, L, Z, offset)
+      left[Id, Doc, Id1, Doc1](client, stash, index, L, Z, offset),
+      right[Id, Doc, Id1, Doc1](client, stash, index, L, Z, offset)
     )
   }
 }
