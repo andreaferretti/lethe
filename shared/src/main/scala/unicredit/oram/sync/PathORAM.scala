@@ -10,9 +10,7 @@ class PathORAM[K, V, Id <: K : Pointed, Doc <: V : Pointed](
   client: StandardClient[(K, V)],
   stash: Stash[K, V],
   index: Index[K],
-  L: Int,
-  Z: Int,
-  offset: Int
+  params: Params
 ) extends ORAM[Id, Doc] {
   sealed trait Op
   case object Read extends Op
@@ -21,6 +19,9 @@ class PathORAM[K, V, Id <: K : Pointed, Doc <: V : Pointed](
   type Bucket = Seq[(K, V)]
   val emptyId = implicitly[Pointed[Id]].empty
   val emptyDoc = implicitly[Pointed[Doc]].empty
+  val offset = params.offset
+  val L = params.depth
+  val Z = params.bucketSize
 
   override def read(id: Id) = access(Read, id, emptyDoc)
   override def write(id: Id, doc: Doc) = access(Write, id, doc)
@@ -75,30 +76,26 @@ object PathORAM {
   def apply[K: Pickler, V: Pickler, Id <: K : Pointed, Doc <: V : Pointed](
     remote: Remote,
     passPhrase: String,
-    L: Int,
-    Z: Int,
-    offset: Int = 0
+    params: Params
   ) = {
     val rng = new SecureRandom
 
     new PathORAM(StandardClient[(K, V)](remote, passPhrase),
-      MapStash.empty[K, V], MapIndex[K](L)(rng), L, Z, offset)
+      MapStash.empty[K, V], MapIndex[K](params.depth)(rng), params)
   }
 
   def recursive[Id: Pointed: Pickler, Doc: Pointed: Pickler, Bin: Pointed: Pickler](
     remote: Remote,
     passPhrase: String,
-    L: Int,
-    Z: Int,
-    offset: Int,
+    params: Params,
     bin: Id => Bin
   ) = {
     val rng = new SecureRandom
-    val index = ORAMIndex.local[Id, Bin](
-      remote, passPhrase, L, Z, offset + pow(2, L + 1) - 1, bin)
+    val indexParams = params.withNextOffset
+    val index = ORAMIndex.local[Id, Bin](remote, passPhrase, indexParams, bin)
     val client = StandardClient[(Id, Doc)](remote, passPhrase)
     val stash = MapStash.empty[Id, Doc]
 
-    new PathORAM[Id, Doc, Id, Doc](client, stash, index, L, Z, offset)
+    new PathORAM[Id, Doc, Id, Doc](client, stash, index, params)
   }
 }

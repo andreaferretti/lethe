@@ -23,8 +23,7 @@ object Search extends App {
   val (index, oram) = MultiORAM.pair[String, Set[UUID], UUID, String](
     remote = ZMQRemote("tcp://localhost:8888"),
     passPhrase = "Hello my friend",
-    L = 8,
-    Z = 4
+    params = Params(depth = 8, bucketSize = 4)
   )
 
   val store = new BasicStore(index, oram)

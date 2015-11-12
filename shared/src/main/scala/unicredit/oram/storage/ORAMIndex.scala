@@ -29,16 +29,13 @@ object ORAMIndex {
   def local[Id: Pickler, Bin: Pointed: Pickler](
     remote: Remote,
     passPhrase: String,
-    L: Int,
-    Z: Int,
-    offset: Int,
+    params: Params,
     bin: Id => Bin
   ) = {
     implicit val pmap = Pointed(Map.empty[Id, Path])
     implicit val rng = new SecureRandom
-    val index = PathORAM[Bin, Map[Id, Path], Bin, Map[Id, Path]](
-      remote, passPhrase, L, Z, offset)
+    val index = PathORAM[Bin, Map[Id, Path], Bin, Map[Id, Path]](remote, passPhrase, params)
 
-    new ORAMIndex(index, L, bin)
+    new ORAMIndex(index, params.depth, bin)
   }
 }

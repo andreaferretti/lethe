@@ -18,8 +18,9 @@ object Main extends App {
   val remote = new ZMQRemote("tcp://localhost:8888")
   implicit val pint = Pointed(-1)
   implicit val pstring = Pointed("")
+  val params = Params(depth = 8, bucketSize = 4)
   val oram = PathORAM.recursive[Int, String, Int](
-    remote, "Hello world", 8, 4, 0, (_: Int) % 1024)
+    remote, "Hello world", params, (_: Int) % 1024)
 
   println("starting initialization...")
   oram.init

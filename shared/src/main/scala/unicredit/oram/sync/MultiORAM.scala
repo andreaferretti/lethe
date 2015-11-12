@@ -37,9 +37,7 @@ object MultiORAM {
     client: StandardClient[(Either[Id, Id1], Either[Doc, Doc1])],
     stash: Stash[Either[Id, Id1], Either[Doc, Doc1]],
     index: Index[Either[Id, Id1]],
-    L: Int,
-    Z: Int,
-    offset: Int
+    params: Params
   ): ORAM[Id, Doc] = {
       implicit val p1 = Pointed(Left[Id, Id1](implicitly[Pointed[Id]].empty))
       implicit val p2 = Pointed(Left[Doc, Doc1](implicitly[Pointed[Doc]].empty))
@@ -47,7 +45,7 @@ object MultiORAM {
         Either[Id, Id1],
         Either[Doc, Doc1],
         Left[Id, Id1],
-        Left[Doc, Doc1]](client, stash, index, L, Z, offset)
+        Left[Doc, Doc1]](client, stash, index, params)
 
       new LeftMultiORAM(inner)
     }
@@ -56,9 +54,7 @@ object MultiORAM {
     client: StandardClient[(Either[Id, Id1], Either[Doc, Doc1])],
     stash: Stash[Either[Id, Id1], Either[Doc, Doc1]],
     index: Index[Either[Id, Id1]],
-    L: Int,
-    Z: Int,
-    offset: Int
+    params: Params
   ): ORAM[Id1, Doc1] = {
       implicit val p1 = Pointed(Right[Id, Id1](implicitly[Pointed[Id1]].empty))
       implicit val p2 = Pointed(Right[Doc, Doc1](implicitly[Pointed[Doc1]].empty))
@@ -66,7 +62,7 @@ object MultiORAM {
         Either[Id, Id1],
         Either[Doc, Doc1],
         Right[Id, Id1],
-        Right[Doc, Doc1]](client, stash, index, L, Z, offset)
+        Right[Doc, Doc1]](client, stash, index, params)
 
       new RightMultiORAM(inner)
     }
@@ -76,15 +72,15 @@ object MultiORAM {
     Doc: Pointed: Pickler,
     Id1: Pointed: Pickler,
     Doc1: Pointed: Pickler
-  ](remote: Remote, passPhrase: String, L: Int, Z: Int, offset: Int = 0) = {
+  ](remote: Remote, passPhrase: String, params: Params) = {
     val client = StandardClient[(Either[Id, Id1], Either[Doc, Doc1])](remote, passPhrase)
     val stash = MapStash.empty[Either[Id, Id1], Either[Doc, Doc1]]
     val rng = new SecureRandom
-    val index = MapIndex[Either[Id, Id1]](L)(rng)
+    val index = MapIndex[Either[Id, Id1]](params.depth)(rng)
 
     (
-      left[Id, Doc, Id1, Doc1](client, stash, index, L, Z, offset),
-      right[Id, Doc, Id1, Doc1](client, stash, index, L, Z, offset)
+      left[Id, Doc, Id1, Doc1](client, stash, index, params),
+      right[Id, Doc, Id1, Doc1](client, stash, index, params)
     )
   }
 }
