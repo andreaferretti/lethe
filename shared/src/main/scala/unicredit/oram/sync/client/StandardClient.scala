@@ -28,9 +28,6 @@ class StandardClient[A](
     }
     remote.init(bytes, start)
   }
-
-  def withSerializer[B](s: Serializer[B]) =
-    new StandardClient(s, crypter, remote)
 }
 
 object StandardClient {
