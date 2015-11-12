@@ -11,8 +11,6 @@ import storage._
 class LeftMultiORAM[Id, Doc, Id1, Doc1] (
   inner: PathORAM[Either[Id, Id1], Either[Doc, Doc1], Left[Id, Id1], Left[Doc, Doc1]]
 ) extends ORAM[Id, Doc] {
-  override def empty = inner.empty.left.get
-
   override def read(id: Id) = inner.read(Left(id)).left.get
 
   override def write(id: Id, doc: Doc) = inner.write(Left(id), Left(doc))
@@ -23,8 +21,6 @@ class LeftMultiORAM[Id, Doc, Id1, Doc1] (
 class RightMultiORAM[Id, Doc, Id1, Doc1] (
   inner: PathORAM[Either[Id, Id1], Either[Doc, Doc1], Right[Id, Id1], Right[Doc, Doc1]]
 ) extends ORAM[Id1, Doc1] {
-  override def empty = inner.empty.right.get
-
   override def read(id: Id1) = inner.read(Right(id)).right.get
 
   override def write(id: Id1, doc: Doc1) = inner.write(Right(id), Right(doc))
@@ -48,7 +44,7 @@ object MultiORAM {
   ): ORAM[Id, Doc] = {
       implicit val p1 = Pointed(Left[Id, Id1](implicitly[Pointed[Id]].empty))
       implicit val p2 = Pointed(Left[Doc, Doc1](implicitly[Pointed[Doc]].empty))
-      val inner = new LocalPathORAM[
+      val inner = new PathORAM[
         Either[Id, Id1],
         Either[Doc, Doc1],
         Left[Id, Id1],
@@ -68,7 +64,7 @@ object MultiORAM {
   ): ORAM[Id1, Doc1] = {
       implicit val p1 = Pointed(Right[Id, Id1](implicitly[Pointed[Id1]].empty))
       implicit val p2 = Pointed(Right[Doc, Doc1](implicitly[Pointed[Doc1]].empty))
-      val inner = new LocalPathORAM[
+      val inner = new PathORAM[
         Either[Id, Id1],
         Either[Doc, Doc1],
         Right[Id, Id1],

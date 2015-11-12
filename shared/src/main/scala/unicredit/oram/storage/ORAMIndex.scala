@@ -36,7 +36,7 @@ object ORAMIndex {
   ) = {
     implicit val pmap = Pointed(Map.empty[Id, Path])
     implicit val rng = new SecureRandom
-    val index = LocalPathORAM[Bin, Map[Id, Path], Bin, Map[Id, Path]](
+    val index = PathORAM[Bin, Map[Id, Path], Bin, Map[Id, Path]](
       remote, passPhrase, L, Z, offset)
 
     new ORAMIndex(index, L, bin)
