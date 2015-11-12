@@ -30,13 +30,13 @@ object ORAMIndex {
     passPhrase: String,
     L: Int,
     Z: Int,
-    bin: Id => Bin,
-    offset: Int = 0
+    offset: Int,
+    bin: Id => Bin
   ) = {
     implicit val pmap = Pointed(Map.empty[Id, Path])
     implicit val rng = new SecureRandom
     val index = LocalPathORAM[Bin, Map[Id, Path], Bin, Map[Id, Path]](
-      remote, passPhrase, L, Z, offset + pow(2, L))
+      remote, passPhrase, L, Z, offset)
 
     new ORAMIndex(index, L, bin)
   }

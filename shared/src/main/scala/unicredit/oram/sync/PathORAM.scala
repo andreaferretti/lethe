@@ -29,12 +29,12 @@ trait PathORAM[K, V, Id <: K, Doc <: V] extends ORAM[Id, Doc] {
   case object Write extends Op
 
   def fetchBucket(p: Path, ℓ: Int): Bucket = {
-    val start = (p.take(ℓ).int - 1) * Z + offset
+    val start = (p.take(ℓ).int - 1 + offset) * Z
     (0 until Z) map { i => client.fetchClear(start + i) }
   }
 
   def putBucket(p: Path, ℓ: Int, bucket: Bucket): Unit = {
-    val start = (p.take(ℓ).int - 1) * Z + offset
+    val start = (p.take(ℓ).int - 1 + offset) * Z
     for (i <- 0 until Z) {
       val item = if (i < bucket.length) bucket(i) else (emptyID, empty)
       client.putClear(start + i, item)
