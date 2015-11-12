@@ -13,6 +13,7 @@ trait PathORAM[K, V, Id <: K, Doc <: V] extends ORAM[Id, Doc] {
   implicit def rng: Random
   def L: Int
   def Z: Int
+  def offset: Int
   def emptyID: Id
   def stash: Stash[K, V]
 
@@ -28,12 +29,12 @@ trait PathORAM[K, V, Id <: K, Doc <: V] extends ORAM[Id, Doc] {
   case object Write extends Op
 
   def fetchBucket(p: Path, ℓ: Int): Bucket = {
-    val start = (p.take(ℓ).int - 1) * Z
+    val start = (p.take(ℓ).int - 1) * Z + offset
     (0 until Z) map { i => client.fetchClear(start + i) }
   }
 
   def putBucket(p: Path, ℓ: Int, bucket: Bucket): Unit = {
-    val start = (p.take(ℓ).int - 1) * Z
+    val start = (p.take(ℓ).int - 1) * Z + offset
     for (i <- 0 until Z) {
       val item = if (i < bucket.length) bucket(i) else (emptyID, empty)
       client.putClear(start + i, item)
@@ -52,8 +53,9 @@ trait PathORAM[K, V, Id <: K, Doc <: V] extends ORAM[Id, Doc] {
     }
     stash filter { case (a, _) => a != emptyID }
     for (ℓ <- (0 to L).reverse) {
-      val stash_ = stash.take(Z){ case (a, _) => x.take(ℓ) == getPosition(a).take(ℓ) }
-      // stash_ = stash_ take Z
+      val stash_ = stash.take(Z){ case (a, _) =>
+        x.take(ℓ) == getPosition(a).take(ℓ)
+      }
       stash --= stash_.keySet
       putBucket(x, ℓ, stash_.toSeq)
     }

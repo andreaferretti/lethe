@@ -22,7 +22,8 @@ class LocalPathORAM[K, V, Id <: K : Pointed, Doc <: V : Pointed](
   val index: Index[K],
   val rng: Random,
   val L: Int,
-  val Z: Int
+  val Z: Int,
+  val offset: Int = 0
 ) extends AbstractLocalPathORAM[K, V, Id, Doc] {
   val empty = implicitly[Pointed[Doc]].empty
   val emptyID = implicitly[Pointed[Id]].empty
@@ -39,7 +40,8 @@ object LocalPathORAM {
     remote: Remote,
     passPhrase: String,
     L: Int,
-    Z: Int
+    Z: Int,
+    offset: Int = 0
   ) = {
     val rng = new SecureRandom
 
