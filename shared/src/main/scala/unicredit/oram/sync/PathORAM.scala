@@ -14,7 +14,6 @@ trait PathORAM[K, V, Id <: K, Doc <: V] extends ORAM[Id, Doc] {
   def L: Int
   def Z: Int
   def emptyID: Id
-  // var stash = Map.empty[K, V]
   def stash: Stash[K, V]
 
   def getPosition(id: K): Path
