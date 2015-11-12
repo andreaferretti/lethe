@@ -40,6 +40,7 @@ object MultiORAM {
   def left[Id: Pointed, Doc: Pointed, Id1, Doc1](
     client: StandardClient[(Either[Id, Id1], Either[Doc, Doc1])],
     stash: Stash[Either[Id, Id1], Either[Doc, Doc1]],
+    index: Index[Either[Id, Id1]],
     rng: Random,
     L: Int,
     Z: Int
@@ -50,7 +51,7 @@ object MultiORAM {
         Either[Id, Id1],
         Either[Doc, Doc1],
         Left[Id, Id1],
-        Left[Doc, Doc1]](client, stash, rng, L, Z)
+        Left[Doc, Doc1]](client, stash, index, rng, L, Z)
 
       new LeftMultiORAM(inner)
     }
@@ -58,6 +59,7 @@ object MultiORAM {
   def right[Id, Doc, Id1: Pointed, Doc1: Pointed](
     client: StandardClient[(Either[Id, Id1], Either[Doc, Doc1])],
     stash: Stash[Either[Id, Id1], Either[Doc, Doc1]],
+    index: Index[Either[Id, Id1]],
     rng: Random,
     L: Int,
     Z: Int
@@ -68,7 +70,7 @@ object MultiORAM {
         Either[Id, Id1],
         Either[Doc, Doc1],
         Right[Id, Id1],
-        Right[Doc, Doc1]](client, stash, rng, L, Z)
+        Right[Doc, Doc1]](client, stash, index, rng, L, Z)
 
       new RightMultiORAM(inner)
     }
@@ -82,10 +84,11 @@ object MultiORAM {
     val client = StandardClient[(Either[Id, Id1], Either[Doc, Doc1])](remote, passPhrase)
     val stash = MapStash.empty[Either[Id, Id1], Either[Doc, Doc1]]
     val rng = new SecureRandom
+    val index = MapIndex[Either[Id, Id1]](L)(rng)
 
     (
-      left[Id, Doc, Id1, Doc1](client, stash, rng, L, Z),
-      right[Id, Doc, Id1, Doc1](client, stash, rng, L, Z)
+      left[Id, Doc, Id1, Doc1](client, stash, index, rng, L, Z),
+      right[Id, Doc, Id1, Doc1](client, stash, index, rng, L, Z)
     )
   }
 }
