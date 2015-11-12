@@ -2,7 +2,7 @@ package unicredit.oram
 package sync
 package client
 
-import java.nio.ByteBuffer
+import java.util.Random
 
 import serialization.{ Serializer, BooSerializer }
 import crypto.{ Crypter, AESCrypter, AESMaterial }
@@ -36,17 +36,17 @@ class StandardClient[A](
 object StandardClient {
   import boopickle.Default._
 
-  def apply[A](remote: Remote, passPhrase: String)(implicit pickler: Pickler[A]) =
+  def apply[A: Pickler](remote: Remote, passPhrase: String)(implicit rng: Random) =
     new StandardClient[A](
       new BooSerializer[A],
-      AESCrypter(passPhrase),
+      AESCrypter(passPhrase, rng),
       remote
     )
 
-  def apply[A](remote: Remote, material: AESMaterial)(implicit pickler: Pickler[A]) =
+  def apply[A: Pickler](remote: Remote, material: AESMaterial)(implicit rng: Random) =
     new StandardClient[A](
       new BooSerializer[A],
-      AESCrypter(material),
+      AESCrypter(material, rng),
       remote
     )
 }

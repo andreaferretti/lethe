@@ -73,10 +73,10 @@ object MultiORAM {
     Id1: Pointed: Pickler,
     Doc1: Pointed: Pickler
   ](remote: Remote, passPhrase: String, params: Params) = {
+    implicit val rng = new SecureRandom
     val client = StandardClient[(Either[Id, Id1], Either[Doc, Doc1])](remote, passPhrase)
     val stash = MapStash.empty[Either[Id, Id1], Either[Doc, Doc1]]
-    val rng = new SecureRandom
-    val index = MapIndex[Either[Id, Id1]](params.depth)(rng)
+    val index = MapIndex[Either[Id, Id1]](params.depth)
 
     (
       left[Id, Doc, Id1, Doc1](client, stash, index, params),

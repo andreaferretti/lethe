@@ -78,10 +78,10 @@ object PathORAM {
     passPhrase: String,
     params: Params
   ) = {
-    val rng = new SecureRandom
+    implicit val rng = new SecureRandom
 
     new PathORAM(StandardClient[(K, V)](remote, passPhrase),
-      MapStash.empty[K, V], MapIndex[K](params.depth)(rng), params)
+      MapStash.empty[K, V], MapIndex[K](params.depth), params)
   }
 
   def recursive[Id: Pointed: Pickler, Doc: Pointed: Pickler, Bin: Pointed: Pickler](
@@ -90,7 +90,7 @@ object PathORAM {
     params: Params,
     bin: Id => Bin
   ) = {
-    val rng = new SecureRandom
+    implicit val rng = new SecureRandom
     val indexParams = params.withNextOffset
     val index = ORAMIndex.local[Id, Bin](remote, passPhrase, indexParams, bin)
     val client = StandardClient[(Id, Doc)](remote, passPhrase)

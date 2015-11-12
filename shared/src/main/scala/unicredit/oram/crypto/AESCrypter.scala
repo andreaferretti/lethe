@@ -1,6 +1,7 @@
 package unicredit.oram
 package crypto
 
+import java.util.Random
 import java.security.SecureRandom
 import java.security.spec.KeySpec
 import javax.crypto.{ Cipher, SecretKey, SecretKeyFactory }
@@ -15,15 +16,8 @@ case class AESMaterial(
   algorithm: String
 )
 
-class AESCrypter(material: AESMaterial) extends Crypter {
+class AESCrypter(material: AESMaterial, rng: Random) extends Crypter {
   type Material = AESMaterial
-  val rng = new SecureRandom()
-
-  def getRandomBytes(size: Int) = {
-    val bytes = Array.ofDim[Byte](size)
-    rng.nextBytes(bytes)
-    bytes
-  }
 
   val secret = new SecretKeySpec(material.secret, material.algorithm)
   val ecipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
@@ -44,7 +38,7 @@ class AESCrypter(material: AESMaterial) extends Crypter {
     val paddingSize = messageStride - (content.size % messageStride)
     val padding = Array.fill[Byte](paddingSize)(0)
     // Add a random prefix for semantic encryption
-    ecipher.doFinal(getRandomBytes(prefixLength) ++ content ++ padding)
+    ecipher.doFinal(AESCrypter.randomBytes(prefixLength, rng) ++ content ++ padding)
   }
 
   override def serialize(implicit s: Serializer[AESMaterial]) =
@@ -54,24 +48,23 @@ class AESCrypter(material: AESMaterial) extends Crypter {
 object AESCrypter {
   private val ITERATIONS = 65536
   private val KEY_LENGTH = 256
-  private val rng = new SecureRandom()
   private val factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1")
 
-  def getRandomBytes(size: Int) = {
+  def randomBytes(size: Int, rng: Random) = {
     val bytes = Array.ofDim[Byte](size)
     rng.nextBytes(bytes)
     bytes
   }
 
-  def apply(material: AESMaterial): AESCrypter =
-    new AESCrypter(material)
+  def apply(material: AESMaterial, rng: Random): AESCrypter =
+    new AESCrypter(material, rng)
 
-  def apply(passPhrase: String): AESCrypter = {
-    val salt = getRandomBytes(64)
+  def apply(passPhrase: String, rng: Random = new SecureRandom): AESCrypter = {
+    val salt = randomBytes(64, rng)
     val spec = new PBEKeySpec(passPhrase.toCharArray, salt, ITERATIONS, KEY_LENGTH)
     val ecipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
     val iv = ecipher.getParameters.getParameterSpec(classOf[IvParameterSpec]).getIV
 
-    apply(AESMaterial(iv, factory.generateSecret(spec).getEncoded, "AES"))
+    apply(AESMaterial(iv, factory.generateSecret(spec).getEncoded, "AES"), rng)
   }
 }
