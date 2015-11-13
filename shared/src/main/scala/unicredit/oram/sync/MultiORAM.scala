@@ -73,4 +73,51 @@ object MultiORAM {
       new PathORAM[K, V, Id2, Doc2](client, stash, index, params)
     )
   }
+
+  def make3[
+    K: Pickler,
+    V: Pickler,
+    Id1 <: K : Pointed,
+    Doc1 <: V : Pointed,
+    Id2 <: K: Pointed,
+    Doc2 <: V : Pointed,
+    Id3 <: K: Pointed,
+    Doc3 <: V : Pointed
+  ](remote: Remote, passPhrase: String, params: Params) = {
+    implicit val rng = new SecureRandom
+    val client = StandardClient[(K, V)](remote, passPhrase)
+    val stash = MapStash.empty[K, V]
+    val index = MapIndex[K](params.depth)
+
+    (
+      new PathORAM[K, V, Id1, Doc1](client, stash, index, params),
+      new PathORAM[K, V, Id2, Doc2](client, stash, index, params),
+      new PathORAM[K, V, Id3, Doc3](client, stash, index, params)
+    )
+  }
+
+  def make4[
+    K: Pickler,
+    V: Pickler,
+    Id1 <: K : Pointed,
+    Doc1 <: V : Pointed,
+    Id2 <: K: Pointed,
+    Doc2 <: V : Pointed,
+    Id3 <: K: Pointed,
+    Doc3 <: V : Pointed,
+    Id4 <: K: Pointed,
+    Doc4 <: V : Pointed
+  ](remote: Remote, passPhrase: String, params: Params) = {
+    implicit val rng = new SecureRandom
+    val client = StandardClient[(K, V)](remote, passPhrase)
+    val stash = MapStash.empty[K, V]
+    val index = MapIndex[K](params.depth)
+
+    (
+      new PathORAM[K, V, Id1, Doc1](client, stash, index, params),
+      new PathORAM[K, V, Id2, Doc2](client, stash, index, params),
+      new PathORAM[K, V, Id3, Doc3](client, stash, index, params),
+      new PathORAM[K, V, Id4, Doc4](client, stash, index, params)
+    )
+  }
 }
