@@ -1,7 +1,11 @@
 package unicredit.oram
 
 
-trait Pointed[A] { def empty: A }
+trait Pointed[A] {
+  def empty: A
+
+  def map[B](f: A => B): Pointed[B] = new APointed(f(empty))
+}
 
 class APointed[A](val empty: A) extends Pointed[A]
 

@@ -33,54 +33,44 @@ object MultiORAM {
   import boopickle.Default._
   import java.security.SecureRandom
 
-  def left[Id: Pointed, Doc: Pointed, Id1, Doc1](
-    client: StandardClient[(Either[Id, Id1], Either[Doc, Doc1])],
-    stash: Stash[Either[Id, Id1], Either[Doc, Doc1]],
-    index: Index[Either[Id, Id1]],
-    params: Params
-  ): ORAM[Id, Doc] = {
-      implicit val p1 = Pointed(Left[Id, Id1](implicitly[Pointed[Id]].empty))
-      implicit val p2 = Pointed(Left[Doc, Doc1](implicitly[Pointed[Doc]].empty))
-      val inner = new PathORAM[
-        Either[Id, Id1],
-        Either[Doc, Doc1],
-        Left[Id, Id1],
-        Left[Doc, Doc1]](client, stash, index, params)
-
-      new LeftMultiORAM(inner)
-    }
-
-  def right[Id, Doc, Id1: Pointed, Doc1: Pointed](
-    client: StandardClient[(Either[Id, Id1], Either[Doc, Doc1])],
-    stash: Stash[Either[Id, Id1], Either[Doc, Doc1]],
-    index: Index[Either[Id, Id1]],
-    params: Params
-  ): ORAM[Id1, Doc1] = {
-      implicit val p1 = Pointed(Right[Id, Id1](implicitly[Pointed[Id1]].empty))
-      implicit val p2 = Pointed(Right[Doc, Doc1](implicitly[Pointed[Doc1]].empty))
-      val inner = new PathORAM[
-        Either[Id, Id1],
-        Either[Doc, Doc1],
-        Right[Id, Id1],
-        Right[Doc, Doc1]](client, stash, index, params)
-
-      new RightMultiORAM(inner)
-    }
-
   def pair[
     Id: Pointed: Pickler,
     Doc: Pointed: Pickler,
     Id1: Pointed: Pickler,
     Doc1: Pointed: Pickler
   ](remote: Remote, passPhrase: String, params: Params) = {
+    type K = Either[Id, Id1]
+    type V = Either[Doc, Doc1]
+    type K1 = Left[Id, Id1]
+    type V1 = Left[Doc, Doc1]
+    type K2 = Right[Id, Id1]
+    type V2 = Right[Doc, Doc1]
+    implicit val p1 = implicitly[Pointed[Id]].map(Left[Id, Id1](_))
+    implicit val p2 = implicitly[Pointed[Id1]].map(Right[Id, Id1](_))
+    implicit val p3 = implicitly[Pointed[Doc]].map(Left[Doc, Doc1](_))
+    implicit val p4 = implicitly[Pointed[Doc1]].map(Right[Doc, Doc1](_))
+    val (left, right) =
+      make2[K, V, K1, V1, K2, V2](remote, passPhrase, params)
+
+    (new LeftMultiORAM(left), new RightMultiORAM(right))
+  }
+
+  def make2[
+    K: Pickler,
+    V: Pickler,
+    Id1 <: K : Pointed,
+    Doc1 <: V : Pointed,
+    Id2 <: K: Pointed,
+    Doc2 <: V : Pointed
+  ](remote: Remote, passPhrase: String, params: Params) = {
     implicit val rng = new SecureRandom
-    val client = StandardClient[(Either[Id, Id1], Either[Doc, Doc1])](remote, passPhrase)
-    val stash = MapStash.empty[Either[Id, Id1], Either[Doc, Doc1]]
-    val index = MapIndex[Either[Id, Id1]](params.depth)
+    val client = StandardClient[(K, V)](remote, passPhrase)
+    val stash = MapStash.empty[K, V]
+    val index = MapIndex[K](params.depth)
 
     (
-      left[Id, Doc, Id1, Doc1](client, stash, index, params),
-      right[Id, Doc, Id1, Doc1](client, stash, index, params)
+      new PathORAM[K, V, Id1, Doc1](client, stash, index, params),
+      new PathORAM[K, V, Id2, Doc2](client, stash, index, params)
     )
   }
 }
