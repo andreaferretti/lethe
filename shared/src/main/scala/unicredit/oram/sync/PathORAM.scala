@@ -61,8 +61,7 @@ class PathORAM[K, V, Id <: K : Pointed, Doc <: V : Pointed](
   }
 
   def init: Unit = {
-    val numBuckets = (pow(2, L + 1) - 1) * Z
-    val items = (0 until numBuckets) map { _ => (emptyId, emptyDoc) }
+    val items = (0 until params.numSlots) map { _ => (emptyId, emptyDoc) }
 
     client.init(items, offset * Z)
     index.init
