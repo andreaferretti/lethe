@@ -26,8 +26,10 @@ lazy val oram = crossProject.in(file("."))
   .jvmSettings(
     libraryDependencies ++= Seq(
       zeromq,
-      "com.github.pathikrit" %% "better-files" % "2.13.0"
-    )
+      "com.github.pathikrit" %% "better-files" % "2.13.0",
+      "org.monifu" %%% "minitest" % "0.14" % "test"
+    ),
+    testFrameworks += new TestFramework("minitest.runner.Framework")
   )
   .jsSettings(
     persistLauncher in Compile := true,
