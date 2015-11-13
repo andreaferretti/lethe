@@ -50,8 +50,8 @@ object MultiORAM {
       make2[K, V, K1, V1, K2, V2](remote, passPhrase, params)
 
     (
-      new WrapORAM(left, leftBijection[Id1, Id2], leftBijection[Doc1, Doc2]),
-      new WrapORAM(right, rightBijection[Id1, Id2], rightBijection[Doc1, Doc2])
+      new WrapORAM[K, V, K1, V1, Id1, Doc1](left, leftBijection[Id1, Id2], leftBijection[Doc1, Doc2]),
+      new WrapORAM[K, V, K2, V2, Id2, Doc2](right, rightBijection[Id1, Id2], rightBijection[Doc1, Doc2])
     )
   }
 
