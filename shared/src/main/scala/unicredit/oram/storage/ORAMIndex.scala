@@ -18,6 +18,8 @@ class ORAMIndex[Id, Bin](oram: ORAM[Bin, Map[Id, Path]], L: Int, bin: Id => Bin)
     oram.write(b, map)
   }
   override def init = oram.init
+
+  override def serialize = ???
 }
 
 object ORAMIndex {

@@ -3,8 +3,12 @@ package storage
 
 import java.util.Random
 
+import boopickle.Default._
 
-class MapIndex[Id](L: Int)(implicit rng: Random) extends Index[Id] {
+import serialization._
+
+
+class MapIndex[Id: Pickler](L: Int)(implicit rng: Random) extends Index[Id] {
   var index = Map.empty[Id, Path]
 
   override def getPosition(id: Id) =
@@ -13,9 +17,21 @@ class MapIndex[Id](L: Int)(implicit rng: Random) extends Index[Id] {
     index += (id -> Path.random(L))
   }
   override def init = ()
+
+  override def serialize = {
+    import Path.pathPickler
+    new BooSerializer[Map[Id, Path]].encode(index)
+  }
 }
 
 object MapIndex {
-  def apply[Id](L: Int)(implicit rng: Random) =
-    new MapIndex[Id](L)(rng)
+  import Path.pathPickler
+
+  def apply[Id: Pickler](L: Int)(implicit rng: Random) =
+    new MapIndex[Id](L)
+
+  def apply[Id: Pickler](a: Array[Byte])(implicit rng: Random) = {
+    val s = new BooSerializer[Map[Id, Path]]
+    new MapStash(s.decode(a))
+  }
 }
