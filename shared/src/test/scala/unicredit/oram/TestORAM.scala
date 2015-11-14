@@ -19,13 +19,13 @@ object ORAMSpec extends SimpleTestSuite {
   implicit val pstring = Pointed("")
   val params = Params(depth = 8, bucketSize = 4)
 
-  def makeOram(passPhrase: String) = {
+  def localOram(passPhrase: String) = {
     val remote = new MemoryRemote(capacity = params.numSlots)
     PathORAM[Int, String, Int, String](remote, passPhrase, params)
   }
 
   test("The local path ORAM should be able to write and retrieve keys") {
-    val oram = makeOram("Hello world")
+    val oram = localOram("Hello world")
 
     oram.init
     for ((doc, id) <- elements.zipWithIndex) {
@@ -36,7 +36,7 @@ object ORAMSpec extends SimpleTestSuite {
   }
 
   test("A missing key should result in an empty doc") {
-    val oram = makeOram("Hello world")
+    val oram = localOram("Hello world")
 
     oram.init
     for ((doc, id) <- elements.zipWithIndex) {
@@ -46,7 +46,7 @@ object ORAMSpec extends SimpleTestSuite {
   }
 
   test("The local path ORAM should be able to overwrite keys") {
-    val oram = makeOram("Hello world")
+    val oram = localOram("Hello world")
 
     oram.init
     for ((doc, id) <- elements.zipWithIndex) {
