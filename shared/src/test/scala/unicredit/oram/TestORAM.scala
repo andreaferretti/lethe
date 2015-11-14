@@ -23,6 +23,43 @@ object ORAMSpec extends SimpleTestSuite {
     val remote = new MemoryRemote(capacity = params.numSlots)
     PathORAM[Int, String, Int, String](remote, passPhrase, params)
   }
+  def trivialOram(passPhrase: String) = {
+    val remote = new MemoryRemote(capacity = params.numSlots)
+    TrivialORAM.unsafe[Int, String](remote)
+  }
+
+  // test("The trivial path ORAM should be able to write and retrieve keys") {
+  //   val oram = trivialOram("Hello world")
+  //
+  //   oram.init
+  //   for ((doc, id) <- elements.zipWithIndex) {
+  //     oram.write(id, doc)
+  //   }
+  //   assertEquals(oram.read(2), "strictly confidential")
+  //   assertEquals(oram.read(0), "this is a secret")
+  // }
+  //
+  // test("A missing key should result in an empty doc") {
+  //   val oram = trivialOram("Hello world")
+  //
+  //   oram.init
+  //   for ((doc, id) <- elements.zipWithIndex) {
+  //     oram.write(id, doc)
+  //   }
+  //   assertEquals(oram.read(12), "")
+  // }
+  //
+  // test("The trivial path ORAM should be able to overwrite keys") {
+  //   val oram = trivialOram("Hello world")
+  //
+  //   oram.init
+  //   for ((doc, id) <- elements.zipWithIndex) {
+  //     oram.write(id, doc)
+  //   }
+  //   assertEquals(oram.read(2), "strictly confidential")
+  //   oram.write(2, "new secret")
+  //   assertEquals(oram.read(2), "new secret")
+  // }
 
   test("The local path ORAM should be able to write and retrieve keys") {
     val oram = localOram("Hello world")
