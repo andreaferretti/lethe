@@ -8,14 +8,12 @@ import transport.MemoryRemote
 
 
 object ORAMSpec extends SimpleTestSuite {
-  def flip[A, B](x: (A, B)) = (x._2, x._1)
-
   val elements = List(
-      "this is a secret",
-      "this is secret as well",
-      "strictly confidential",
-      "cippa lippa"
-    ).zipWithIndex map flip
+    "this is a secret",
+    "this is secret as well",
+    "strictly confidential",
+    "cippa lippa"
+  )
 
   implicit val pint = Pointed(-1)
   implicit val pstring = Pointed("")
@@ -30,7 +28,7 @@ object ORAMSpec extends SimpleTestSuite {
     val oram = makeOram("Hello world")
 
     oram.init
-    for ((id, doc) <- elements) {
+    for ((doc, id) <- elements.zipWithIndex) {
       oram.write(id, doc)
     }
     assertEquals(oram.read(2), "strictly confidential")
@@ -41,7 +39,7 @@ object ORAMSpec extends SimpleTestSuite {
     val oram = makeOram("Hello world")
 
     oram.init
-    for ((id, doc) <- elements) {
+    for ((doc, id) <- elements.zipWithIndex) {
       oram.write(id, doc)
     }
     assertEquals(oram.read(12), "")
@@ -51,7 +49,7 @@ object ORAMSpec extends SimpleTestSuite {
     val oram = makeOram("Hello world")
 
     oram.init
-    for ((id, doc) <- elements) {
+    for ((doc, id) <- elements.zipWithIndex) {
       oram.write(id, doc)
     }
     assertEquals(oram.read(2), "strictly confidential")
