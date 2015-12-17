@@ -1,7 +1,6 @@
 package unicredit.oram
 
 import scala.io.StdIn
-import java.util.UUID
 
 import better.files._, Cmds._
 import com.github.tototoshi.csv._
@@ -29,24 +28,17 @@ case class Person(
 )
 
 object Data extends App {
-  implicit val uuidPickler = transformPickler[UUID, String](_.toString, UUID.fromString)
   implicit val pstring = Pointed("")
-  implicit val puuid = Pointed(UUID.fromString("16b01bbe-484b-49e8-85c5-f424a983205f"))
-  implicit val puuidset = Pointed(Set.empty[UUID])
   implicit val pperson = Pointed(Person())
 
-  val (index, oram) = MultiORAM.pair[String, Set[UUID], UUID, Person](
+  val store = DataStore[Person, String, String](
+    _.firstName,
+    _.city,
     remote = ZMQRemote("tcp://localhost:8888"),
     passPhrase = "Hello my friend",
     params = Params(depth = 8, bucketSize = 4)
   )
 
-  val store = new DataStore[Person, String](index, oram, _.firstName)
-
-  println("Starting initialization...")
-  index.init
-  oram.init
-  println("Done!")
 
   for (document <- ls(file"people")) {
     println(s"Adding document $document")
@@ -66,7 +58,16 @@ object Data extends App {
     val name = StdIn.readLine.trim
     if (name == "") { keepGoing = false }
     else {
-      val people = store.search(name)
+      val people = store.search1(name)
+      for (person <- people) {
+        println(person)
+      }
+    }
+    println("Lookup a person by city:")
+    val city = StdIn.readLine.trim
+    if (city == "") { keepGoing = false }
+    {
+      val people = store.search2(city)
       for (person <- people) {
         println(person)
       }

@@ -13,6 +13,13 @@ val commonSettings = Seq(
   )
 )
 
+lazy val macros = crossProject.in(file("macros"))
+  .settings(commonSettings: _*)
+  .settings(
+    libraryDependencies <+= (scalaVersion)
+      ("org.scala-lang" % "scala-reflect" % _)
+  )
+
 lazy val messages = crossProject.in(file("messages"))
   .settings(commonSettings: _*)
   .settings(
@@ -27,6 +34,7 @@ lazy val oram = crossProject.in(file("."))
     libraryDependencies ++= Seq(
       zeromq,
       "com.github.pathikrit" %% "better-files" % "2.13.0",
+      "com.github.tototoshi" %% "scala-csv" % "1.2.2",
       "org.monifu" %%% "minitest" % "0.14" % "test"
     ),
     testFrameworks += new TestFramework("minitest.runner.Framework")
@@ -38,10 +46,12 @@ lazy val oram = crossProject.in(file("."))
       "be.doeraene" %%% "scalajs-jquery" % "0.8.1"
     )
   )
-  .dependsOn(messages)
+  .dependsOn(messages, macros)
 
 lazy val messagesJVM = messages.jvm
 lazy val messagesJS = messages.js
+lazy val macrosJS = macros.js
+lazy val macrosJVM = macros.jvm
 lazy val oramJVM = oram.jvm
 lazy val oramJS = oram.js
 
