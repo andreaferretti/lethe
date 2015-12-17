@@ -65,7 +65,7 @@ object DataStore {
     passPhrase: String,
     params: Params
   ) = {
-    val (index, oram) = MultiORAM.pair[Field, Set[UUID], UUID, Data](
+    val (index, oram) = MultiORAM.gen2[Field, Set[UUID], UUID, Data](
       remote, passPhrase, params)
 
     oram.init
@@ -81,7 +81,7 @@ object DataStore {
     passPhrase: String,
     params: Params
   ) = {
-    val (index1, index2, oram) = MultiORAM.triple[
+    val (index1, index2, oram) = MultiORAM.gen3[
       Field1,
       Set[UUID],
       Field2,

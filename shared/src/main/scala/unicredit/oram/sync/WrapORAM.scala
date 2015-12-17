@@ -2,8 +2,6 @@ package unicredit.oram
 package sync
 
 
-case class Bijection[A, B](from: A => B, to: B => A)
-
 class WrapORAM[K, V, K1 <: K, V1 <:V, Id, Doc] (
   inner: PathORAM[K, V, K1, V1],
   bijId: Bijection[Id, K1],
