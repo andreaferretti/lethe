@@ -1,4 +1,4 @@
-name := "ORAM"
+name := "lethe"
 
 val zeromq = "org.zeromq" % "jeromq" % "0.3.5"
 
@@ -28,7 +28,7 @@ lazy val messages = crossProject.in(file("messages"))
     )
   )
 
-lazy val oram = crossProject.in(file("."))
+lazy val lethe = crossProject.in(file("."))
   .settings(commonSettings: _*)
   .jvmSettings(
     libraryDependencies ++= Seq(
@@ -46,16 +46,14 @@ lazy val oram = crossProject.in(file("."))
       "be.doeraene" %%% "scalajs-jquery" % "0.8.1"
     )
   )
-  .dependsOn(messages, macros)
+  .dependsOn(messages)
 
 lazy val messagesJVM = messages.jvm
 lazy val messagesJS = messages.js
-lazy val macrosJS = macros.js
-lazy val macrosJVM = macros.jvm
-lazy val oramJVM = oram.jvm
-lazy val oramJS = oram.js
+lazy val letheJVM = lethe.jvm
+lazy val letheJS = lethe.js
 
-lazy val oramServer = project.in(file("server"))
+lazy val letheServer = project.in(file("server"))
   .settings(commonSettings: _*)
   .settings(
     libraryDependencies ++= Seq(
@@ -65,4 +63,4 @@ lazy val oramServer = project.in(file("server"))
   )
   .dependsOn(messages.jvm)
 
-lazy val root = project.in(file(".")).aggregate(oramJVM, oramJS, oramServer)
+lazy val root = project.in(file(".")).aggregate(letheJVM, letheJS, letheServer)
