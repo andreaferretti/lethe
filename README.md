@@ -93,6 +93,9 @@ A lot remains to be done, and here is a tentative plan:
 * The [oblivious data structures](https://eprint.iacr.org/2014/185.pdf) are not
   implemented yet.
 
+The package `unicredit.lethe.async` is currently lagging behind its sync
+counterpart and will need to be adapted accordingly.
+
 
 ##Glossary
 
