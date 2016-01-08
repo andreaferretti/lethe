@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-dark.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <title>Lethe by unicredit</title>
+  </head>
+
+  <body>
+    <div id="container">
+      <div class="inner">
+
+        <header>
+          <h1>Lethe</h1>
+          <h2>Oblivious RAM for Scala</h2>
+        </header>
+
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/unicredit/lethe/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/unicredit/lethe/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/unicredit/lethe" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <hr>
+
+        <section id="main_content">
+          <h1>
+<a id="lethe" class="anchor" href="#lethe" aria-hidden="true"><span class="octicon octicon-link"></span></a>Lethe</h1>
+
+<p><img src="https://raw.githubusercontent.com/unicredit/lethe/master/lethe.png" alt="logo"></p>
+
+<p>This is a library designed to provide an <a href="http://outsourcedbits.org/2013/12/20/how-to-search-on-encrypted-data-part-4-oblivious-rams/">Oblivious RAM</a>
+and some higher-level tools on top of it.</p>
+
+<p>More specifically, Lethe is an implementation of <a href="https://eprint.iacr.org/2013/280.pdf">Path ORAM</a>.</p>
+
+<h2>
+<a id="table-of-contents" class="anchor" href="#table-of-contents" aria-hidden="true"><span class="octicon octicon-link"></span></a>Table of contents</h2>
+
+
+
+<ul>
+<li>
+<a href="#lethe">Lethe</a>
+
+<ul>
+<li><a href="#so-what-is-an-oblivious-ram">So, what is an oblivious RAM?</a></li>
+<li><a href="#goals">Goals</a></li>
+<li><a href="#status">Status</a></li>
+<li><a href="#glossary">Glossary</a></li>
+</ul>
+</li>
+</ul>
+
+
+
+<h2>
+<a id="so-what-is-an-oblivious-ram" class="anchor" href="#so-what-is-an-oblivious-ram" aria-hidden="true"><span class="octicon octicon-link"></span></a>So, what is an oblivious RAM?</h2>
+
+<p>Is is a model that helps when designing applications that delegate an untrusted
+server with access to their data (think cloud computing). Of course, in such a
+situation, one should encrypt the data on the client side.</p>
+
+<p><a href="https://www.internetsociety.org/sites/default/files/06_1.pdf">Turns out</a> this
+is <a href="https://eprint.iacr.org/2013/163.pdf">not enough</a>. Observation of the access
+patterns to the data can allow an attacker to gain significant information. As
+shown in the papers above, actual attacks can be mounted and this is not only a
+theoretical concern.</p>
+
+<p>Oblivious RAM models a random access data structure giving guarantees that the
+attacker will not learn anything other than the frequency of access and the
+overall size of data. Various techniques exist, all based on the idea of
+continuously shuffling memory as it is being accessed.</p>
+
+<p>Lethe is an implementation of <a href="https://eprint.iacr.org/2013/280.pdf">Path ORAM</a>.</p>
+
+<h2>
+<a id="goals" class="anchor" href="#goals" aria-hidden="true"><span class="octicon octicon-link"></span></a>Goals</h2>
+
+<p>The end goal is to provide a complete implementation of Path ORAM in Scala, that
+works both on the JVM and in <a href="http://www.scala-js.org/">Scala.js</a>.</p>
+
+<p>On top of that, various higher-level features can be constructed:</p>
+
+<ul>
+<li>data indices to allow serching encrypted data</li>
+<li>support for SQL-like queries</li>
+<li><a href="https://eprint.iacr.org/2014/185.pdf">oblivious data structures</a></li>
+</ul>
+
+<p>Eventually, the long term aim would be to provide a deployable server together
+with a client library of data structures that can be mapped on the server and
+some form of SQL support.</p>
+
+<h2>
+<a id="status" class="anchor" href="#status" aria-hidden="true"><span class="octicon octicon-link"></span></a>Status</h2>
+
+<p>Currently Lethe contains a basic implementation of Path ORAM that uses
+<a href="http://zeromq.org/">ZeroMQ</a> to communicate synchronously with a server.
+The server is very minimal, and can either work in memory, or use
+<a href="https://github.com/wlu-mstr/leveldb-java">LevelDB</a> as a storage backend to
+persist data across sessions.</p>
+
+<p>A recursive form of the Path ORAM algorithm is used to minimize the amount of
+data that the client has to keep.</p>
+
+<p>On top of that, a very basic form of indexing is developed, allowing search
+on both structured data and free text.</p>
+
+<p>A lot remains to be done, and here is a tentative plan:</p>
+
+<ul>
+<li>Clients have to mantain some form of key to get access to the data. This
+includes both a private key in the traditional sense, and additional
+information that allows to reconstruct to structure of data on the server.
+Everything is designed so that such information is serializable, but a
+mechanism to save the key to a file and restore a previous session is not
+implemented yet.</li>
+<li>Making it work in Scala.js. Most of the work is done: we have chosen
+libraries that cross-compile, and the communication with the server itself
+is handled by a very simple interface, allowing other transports than
+ZeroMQ. But in the browser we cannot use a synchronous model of communication,
+and this impacts the algorithms. Once everything is stable, we can port it
+to an asynchronous model using <a href="https://github.com/scala/async">async/await</a>,
+and then implement the relevant transport interface over AJAX.</li>
+<li>The indexing technique is currently very rough, and only serves as a proof
+of concept. We should develop more sophisticated, fast and flexible indices.</li>
+<li>The server is currently not very robust and not designed to handle multiple
+clients. It is ok just for the proof of concept, but is not in any sense an
+actual usable server.</li>
+<li>We could make use of something like <a href="https://github.com/apache/spark/tree/master/sql/catalyst">Catalyst</a>
+to parse SQL queries and translate them into a query plan that makes use of
+random access as provided by the ORAM and indices. This would allow to
+support a basic form of SQL in an oblivious manner.</li>
+<li>The <a href="https://eprint.iacr.org/2014/185.pdf">oblivious data structures</a> are not
+implemented yet.</li>
+</ul>
+
+<p>The package <code>unicredit.lethe.async</code> is currently lagging behind its sync
+counterpart and will need to be adapted accordingly.</p>
+
+<h2>
+<a id="glossary" class="anchor" href="#glossary" aria-hidden="true"><span class="octicon octicon-link"></span></a>Glossary</h2>
+
+<p>A <code>Remote</code> is an interface to read and write blocks of data, possibly to a
+server. A trivial example is <code>MemoryRemote</code>, that just keeps the blocks in
+memory without sending them at all. Alternatively, <code>ZMQRemote</code> talks to an
+actual remote ZeroMQ server.</p>
+
+<p>A <code>Serializer[A]</code> is used to convert between and <code>Array[Byte]</code> and back;
+by default we use BooPickle to handle this.</p>
+
+<p>A <code>Crypter</code> handles encryptions and decryption, working at the byte array
+level. An example is the <code>AESCrypter</code>.</p>
+
+<p>A <code>Client[A]</code> has access to all of them, and used this to talk to the server,
+sending and receiving encrypted instances of <code>A</code>. In particular,
+<code>StandardClient[A]</code> just puts together the three.</p>
+
+<p>An <code>ORAM</code> has access to a <code>Client</code> that communicates to a server
+and makes sure that one can read or write instances of <code>Doc</code>, indexed by <code>Id</code>.
+The <code>TrivialORAM</code> does this by always reading and writing back all
+documents for all operations.</p>
+
+<p><code>PathORAM</code> does this by implementing the actual Path ORAM construction.
+The index that maps each <code>Id</code> to the relative <code>Path</code> is kept abstract in
+order to handle recursion. In <code>LocalPathORAM</code>, we specialize the index
+to be a local <code>Map[Id, Path]</code>, while <code>RecursivePathORAM</code> stores the
+index as an ORAM itself.</p>
+        </section>
+
+        <footer>
+          Lethe is maintained by <a href="https://github.com/unicredit">unicredit</a><br>
+          This page was generated by <a href="https://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+
+        
+      </div>
+    </div>
+  </body>
+</html>
