@@ -22,7 +22,7 @@ Table of contents
 
 ##So, what is an oblivious RAM?
 
-Is is a model that helps when designing applications that delegate an untrusted
+It is a model that helps when designing applications that delegate an untrusted
 server with access to their data (think cloud computing). Of course, in such a
 situation, one should encrypt the data on the client side.
 
