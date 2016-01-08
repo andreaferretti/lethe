@@ -1,5 +1,7 @@
 #Lethe
 
+![logo](https://raw.githubusercontent.com/unicredit/lethe/master/lethe.png)
+
 This is a library designed to provide an [Oblivious RAM](http://outsourcedbits.org/2013/12/20/how-to-search-on-encrypted-data-part-4-oblivious-rams/)
 and some higher-level tools on top of it.
 
