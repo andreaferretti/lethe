@@ -1,4 +1,4 @@
-#Lethe
+# Lethe
 
 ![logo](https://raw.githubusercontent.com/unicredit/lethe/master/lethe.png)
 
@@ -20,7 +20,7 @@ Table of contents
 
 <!-- /TOC -->
 
-##So, what is an oblivious RAM?
+## So, what is an oblivious RAM?
 
 It is a model that helps when designing applications that delegate an untrusted
 server with access to their data (think cloud computing). Of course, in such a
@@ -39,7 +39,7 @@ continuously shuffling memory as it is being accessed.
 
 Lethe is an implementation of [Path ORAM](https://eprint.iacr.org/2013/280.pdf).
 
-##Goals
+## Goals
 
 The end goal is to provide a complete implementation of Path ORAM in Scala, that
 works both on the JVM and in [Scala.js](http://www.scala-js.org/).
@@ -54,7 +54,7 @@ Eventually, the long term aim would be to provide a deployable server together
 with a client library of data structures that can be mapped on the server and
 some form of SQL support.
 
-##Status
+## Status
 
 Currently Lethe contains a basic implementation of Path ORAM that uses
 [ZeroMQ](http://zeromq.org/) to communicate synchronously with a server.
@@ -99,7 +99,7 @@ The package `unicredit.lethe.async` is currently lagging behind its sync
 counterpart and will need to be adapted accordingly.
 
 
-##Glossary
+## Glossary
 
 A `Remote` is an interface to read and write blocks of data, possibly to a
 server. A trivial example is `MemoryRemote`, that just keeps the blocks in
