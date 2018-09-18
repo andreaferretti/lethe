@@ -16,7 +16,7 @@ package unicredit.lethe
 
 import scala.io.StdIn
 
-import better.files._, Cmds._
+import better.files._, Dsl._
 import com.github.tototoshi.csv._
 import boopickle.Default._
 

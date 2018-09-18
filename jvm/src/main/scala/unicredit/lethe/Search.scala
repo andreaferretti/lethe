@@ -18,7 +18,7 @@ import scala.io.StdIn
 import java.util.UUID
 import java.security.SecureRandom
 
-import better.files._, Cmds._
+import better.files._, Dsl._
 import boopickle.Default._
 
 import sync._
@@ -28,7 +28,7 @@ import client._
 
 
 object Search extends App {
-  implicit val uuidPickler = transformPickler[UUID, String](_.toString, UUID.fromString)
+
   implicit val pint = Pointed(-1)
   implicit val pstring = Pointed("")
   implicit val puuid = Pointed(UUID.fromString("16b01bbe-484b-49e8-85c5-f424a983205f"))

@@ -44,5 +44,5 @@ object Path {
     new Path(rng.nextInt(cap) + cap)
   }
 
-  implicit val pathPickler = transformPickler[Path, Int](_.int, apply)
+  implicit val pathPickler = transformPickler[Path, Int](apply)(_.int)
 }
