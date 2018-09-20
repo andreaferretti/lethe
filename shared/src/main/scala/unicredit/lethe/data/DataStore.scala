@@ -69,7 +69,7 @@ object DataStore {
   import sync.transport.Remote
   import sync.MultiORAM
 
-  implicit val uuidPickler = transformPickler[UUID, String](_.toString, UUID.fromString)
+
   implicit val puuid = Pointed(UUID.fromString("16b01bbe-484b-49e8-85c5-f424a983205f"))
   implicit val puuidset = Pointed(Set.empty[UUID])
 
