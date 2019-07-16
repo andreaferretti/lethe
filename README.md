@@ -94,6 +94,8 @@ A lot remains to be done, and here is a tentative plan:
   support a basic form of SQL in an oblivious manner.
 * The [oblivious data structures](https://eprint.iacr.org/2014/185.pdf) are not
   implemented yet.
+* Implement integrity checks based on https://core.ac.uk/download/pdf/20024962.pdf
+* Implement [Lookahead ORAM](https://www.mccme.ru/~raskin/oram)
 
 The package `unicredit.lethe.async` is currently lagging behind its sync
 counterpart and will need to be adapted accordingly.
