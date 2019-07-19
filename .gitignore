@@ -4,3 +4,4 @@ target
 /data
 /people
 .vscode
+.DS_Store

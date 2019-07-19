@@ -27,18 +27,15 @@ import client._
 
 
 case class Person(
-  firstName: String = "",
-  lastName: String = "",
-  companyName: String = "",
-  address: String = "",
-  city: String = "",
-  county: String = "",
-  state: String = "",
-  zip: String = "",
-  phone1: String = "",
-  phone2: String = "",
+  person_ID: String = "",
+  name: String = "",
+  first: String = "",
+  last: String = "",
+  middle: String = "",
   email: String = "",
-  web: String = ""
+  phone: String = "",
+  fax: String = "",
+  title: String = ""
 )
 
 object Data extends App {
@@ -46,8 +43,8 @@ object Data extends App {
   implicit val pperson = Pointed(Person())
 
   val store = DataStore[Person, String, String](
-    _.firstName,
-    _.city,
+    _.first,
+    _.email,
     remote = ZMQRemote("tcp://localhost:8888"),
     passPhrase = "Hello my friend",
     params = Params(depth = 8, bucketSize = 4)
@@ -58,8 +55,8 @@ object Data extends App {
     println(s"Adding document $document")
     val reader = CSVReader.open(document.toJava)
     for (list <- reader) {
-      val Seq(l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12) = list
-      val person = Person(l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12)
+      val Seq(l1, l2, l3, l4, l5, l6, l7, l8, l9) = list
+      val person = Person(l1, l2, l3, l4, l5, l6, l7, l8, l9)
       store.add(person)
     }
     reader.close()
@@ -77,11 +74,11 @@ object Data extends App {
         println(person)
       }
     }
-    println("Lookup a person by city:")
-    val city = StdIn.readLine.trim
-    if (city == "") { keepGoing = false }
+    println("Lookup a person by email:")
+    val email = StdIn.readLine.trim
+    if (email == "") { keepGoing = false }
     {
-      val people = store.search2(city)
+      val people = store.search2(email)
       for (person <- people) {
         println(person)
       }
