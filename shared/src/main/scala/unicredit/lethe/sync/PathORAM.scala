@@ -131,7 +131,8 @@ object PathORAM {
   def apply[K: Pickler, V: Pickler, Id <: K : Pointed, Doc <: V : Pointed](
     client: StandardClient[(K, V)],
     a: Array[Byte]
-  )(implicit rng: Random) = {
+  ) = {
+    implicit val rng = new SecureRandom
     val material = new BooSerializer[PathORAMMaterial].decode(a)
     val stash = MapStash[K, V](material.stash)
     val index = MapIndex[K](material.params.depth, material.index)

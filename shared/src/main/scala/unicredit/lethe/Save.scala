@@ -16,8 +16,6 @@ package unicredit.lethe
 
 import scala.collection.JavaConversions._
 
-import java.util.Random
-
 import better.files._, Dsl._
 import boopickle.Default._
 
@@ -33,5 +31,5 @@ object Save {
   def restorePathORAM[K: Pickler, V: Pickler, Id <: K : Pointed, Doc <: V : Pointed](
     client: StandardClient[(K, V)],
     path: String
-  )(implicit rng: Random) = PathORAM[K, V, Id, Doc](client, File(path).loadBytes)
+  ) = PathORAM[K, V, Id, Doc](client, File(path).loadBytes)
 }
