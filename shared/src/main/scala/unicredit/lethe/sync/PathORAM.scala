@@ -15,10 +15,21 @@
 package unicredit.lethe
 package sync
 
+import java.util.Random
+
+import boopickle.Default._
+
 import client._
 import storage._
 import transport.Remote
+import serialization._
 
+
+case class PathORAMMaterial(
+  stash: Array[Byte],
+  index: Array[Byte],
+  params: Params
+)
 
 class PathORAM[K, V, Id <: K : Pointed, Doc <: V : Pointed](
   client: StandardClient[(K, V)],
@@ -80,6 +91,11 @@ class PathORAM[K, V, Id <: K : Pointed, Doc <: V : Pointed](
     client.init(items, offset * Z)
     index.init
   }
+
+  def serialize: Array[Byte] = {
+    val material = PathORAMMaterial(stash.serialize, index.serialize, params)
+    new BooSerializer[PathORAMMaterial].encode(material)
+  }
 }
 
 object PathORAM {
@@ -110,5 +126,16 @@ object PathORAM {
     val stash = MapStash.empty[Id, Doc]
 
     new PathORAM[Id, Doc, Id, Doc](client, stash, index, params)
+  }
+
+  def apply[K: Pickler, V: Pickler, Id <: K : Pointed, Doc <: V : Pointed](
+    client: StandardClient[(K, V)],
+    a: Array[Byte]
+  )(implicit rng: Random) = {
+    val material = new BooSerializer[PathORAMMaterial].decode(a)
+    val stash = MapStash[K, V](material.stash)
+    val index = MapIndex[K](material.params.depth, material.index)
+
+    new PathORAM(client, stash, index, material.params)
   }
 }

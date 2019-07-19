@@ -22,9 +22,7 @@ import boopickle.Default._
 import serialization._
 
 
-class MapIndex[Id: Pickler](L: Int)(implicit rng: Random) extends Index[Id] {
-  var index = Map.empty[Id, Path]
-
+class MapIndex[Id: Pickler](L: Int, var index: Map[Id, Path] = Map.empty[Id, Path])(implicit rng: Random) extends Index[Id] {
   override def getPosition(id: Id) =
     index.getOrElse(id, Path.random(L))
   override def putRandom(id: Id) = {
@@ -44,8 +42,8 @@ object MapIndex {
   def apply[Id: Pickler](L: Int)(implicit rng: Random) =
     new MapIndex[Id](L)
 
-  def apply[Id: Pickler](a: Array[Byte])(implicit rng: Random) = {
+  def apply[Id: Pickler](L: Int, a: Array[Byte])(implicit rng: Random) = {
     val s = new BooSerializer[Map[Id, Path]]
-    new MapStash(s.decode(a))
+    new MapIndex(L, s.decode(a))
   }
 }
