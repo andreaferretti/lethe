@@ -5,3 +5,6 @@ target
 /people
 .vscode
 .DS_Store
+.bloop/
+.metals/
+project/.bloop/
