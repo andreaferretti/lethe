@@ -13,15 +13,24 @@
 * limitations under the License.
 */
 package unicredit.lethe
-package crypto
 
-import serialization.Serializer
+import scala.collection.JavaConversions._
+import java.util.Random
 
+import better.files._, Dsl._
+import boopickle.Default._
 
-class NoCrypter extends Crypter {
-  override def encrypt(a: Array[Byte]) = a
-  override def decrypt(a: Array[Byte]) = a
+import sync._
+import transport._
 
-  type Material = Unit
-  override def serialize = Array()
+object Persistence {
+  def save[K, V, Id <: K : Pointed, Doc <: V : Pointed](
+    path: String,
+    oram: PathORAM[K, V, Id, Doc]
+  ) = File(path).writeBytes(oram.serialize.toIterator)
+
+  def restorePathORAM[K: Pickler, V: Pickler, Id <: K : Pointed, Doc <: V : Pointed](
+    remote: Remote,
+    path: String
+  )(implicit rng: Random) = PathORAM[K, V, Id, Doc](remote, File(path).loadBytes)
 }

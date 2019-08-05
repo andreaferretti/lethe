@@ -26,25 +26,13 @@ import transport._
 import client._
 
 
-object SaveAndRestore extends App {
+object Restore extends App {
   implicit val pstring = Pointed("")
+  implicit val rng = new SecureRandom
 
   val remote = ZMQRemote("tcp://localhost:8888")
-  val params = Params(depth = 8, bucketSize = 4)
-  val oram = PathORAM[String, String, String, String](remote, "Hello my friend", params)
-
-  oram.init
-  oram.write("1", "Alice")
-  oram.write("2", "Bob")
-  oram.write("3", "Eve")
-  oram.write("4", "Mallory")
-
   val path = "test.oram"
-  Save.save(path, oram)
-
-  implicit val rng = new SecureRandom
-  val client = StandardClient[(String, String)](remote, "Hello my friend")
-  val oram_ = Save.restorePathORAM[String, String, String, String](client, path)
+  val oram = Persistence.restorePathORAM[String, String, String, String](remote, path)
 
   var keepGoing = true
   while (keepGoing) {
@@ -53,7 +41,7 @@ object SaveAndRestore extends App {
     try {
       val n = input.toInt
       if ((n >= 1) && (n <= 4)) {
-        val name = oram_.read(n.toString)
+        val name = oram.read(n.toString)
         println(name)
       }
     }
