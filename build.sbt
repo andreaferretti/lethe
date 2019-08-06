@@ -27,12 +27,12 @@ lazy val lethe = project.in(file("."))
     libraryDependencies ++= Seq(
       zeromq,
       "com.github.pathikrit" %% "better-files" % "3.6.0",
-      "com.github.tototoshi" %% "scala-csv" % "1.3.5",
       "io.monix" %% "minitest" % "2.2.1" % "test"
     ),
     testFrameworks += new TestFramework("minitest.runner.Framework")
   )
   .dependsOn(messages)
+  .aggregate(server)
 
 lazy val server = project.in(file("server"))
   .settings(commonSettings: _*)
@@ -46,4 +46,10 @@ lazy val server = project.in(file("server"))
 
 lazy val apps = project.in(file("apps"))
   .settings(commonSettings: _*)
+  .settings(
+    libraryDependencies ++= Seq(
+      "com.github.tototoshi" %% "scala-csv" % "1.3.5"
+    ),
+    testFrameworks += new TestFramework("minitest.runner.Framework")
+  )
   .dependsOn(lethe)
