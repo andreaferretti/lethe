@@ -89,7 +89,7 @@ A lot remains to be done, and here is a tentative plan:
 * The [oblivious data structures](https://eprint.iacr.org/2014/185.pdf) are not
   implemented yet.
 * Implement integrity checks based on https://core.ac.uk/download/pdf/20024962.pdf
-* Implement [Lookahead ORAM](https://www.mccme.ru/~raskin/oram)
+* Implement [Lookahead ORAM](https://eprint.iacr.org/2018/268.pdf)
 
 
 ## Glossary
