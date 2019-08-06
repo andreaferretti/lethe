@@ -1,5 +1,3 @@
-// import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
-
 name := "lethe"
 
 val zeromq = "org.zeromq" % "jeromq" % "0.3.5"
@@ -14,12 +12,6 @@ val commonSettings = Seq(
     "-language:postfixOps"
   )
 )
-
-// lazy val macros = project.in(file("macros"))
-//   .settings(commonSettings: _*)
-//   .settings(
-//     libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value
-//   )
 
 lazy val messages = project.in(file("messages"))
   .settings(commonSettings: _*)
@@ -42,12 +34,7 @@ lazy val lethe = project.in(file("."))
   )
   .dependsOn(messages)
 
-// lazy val messagesJVM = messages.jvm
-// lazy val messagesJS = messages.js
-// lazy val letheJVM = lethe.jvm
-// lazy val letheJS = lethe.js
-
-lazy val letheServer = project.in(file("server"))
+lazy val server = project.in(file("server"))
   .settings(commonSettings: _*)
   .settings(
     libraryDependencies ++= Seq(
