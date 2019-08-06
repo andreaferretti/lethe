@@ -17,7 +17,7 @@ package search
 
 import java.util.UUID
 
-import sync.ORAM
+import oram.ORAM
 
 
 trait DocumentStore[Doc, Term] {

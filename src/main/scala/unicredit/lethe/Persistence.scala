@@ -20,8 +20,8 @@ import java.util.Random
 import better.files._, Dsl._
 import boopickle.Default._
 
-import sync._
-import transport._
+import oram.PathORAM
+import transport.Remote
 
 object Persistence {
   def save[K, V, Id <: K : Pointed, Doc <: V : Pointed](

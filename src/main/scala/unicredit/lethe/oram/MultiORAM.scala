@@ -13,7 +13,7 @@
 * limitations under the License.
 */
 package unicredit.lethe
-package sync
+package oram
 
 import java.util.Random
 

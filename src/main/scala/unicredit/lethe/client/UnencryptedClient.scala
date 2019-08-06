@@ -12,22 +12,15 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package unicredit.lethe.sync.transport
+package unicredit.lethe
+package client
+
+import boopickle.Default._
+
+import crypto.NoCrypter
+import serialization.BooSerializer
+import transport.Remote
 
 
-class MemoryRemote(val capacity: Int) extends Remote {
-  var data = Array.fill(capacity)(Array.empty[Byte])
-
-  def fetch(n: Int) = data(n)
-
-  def put(n: Int, a: Array[Byte]) = { data(n) = a }
-
-  def init(d: Seq[Array[Byte]], start: Int) = {
-    if (start + d.length > capacity) {
-      throw new Exception("Exceeding capacity")
-    }
-    for (i <- 0 until d.length) {
-      data(i + start) = d(i)
-    }
-  }
-}
+class UnencryptedClient[A: Pickler](remote: Remote)
+  extends StandardClient[A](new BooSerializer[A], new NoCrypter, remote)

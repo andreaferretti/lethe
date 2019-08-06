@@ -15,8 +15,6 @@
 package unicredit.lethe
 package crypto
 
-import serialization.Serializer
-
 
 trait Crypter {
   def encrypt(a: Array[Byte]): Array[Byte]

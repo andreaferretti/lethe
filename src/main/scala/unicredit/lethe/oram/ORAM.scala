@@ -12,25 +12,11 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package unicredit.lethe.async
-
-import scala.concurrent.{ Future, ExecutionContext }
-import scala.math.BigInt
+package unicredit.lethe.oram
 
 
-trait UnencryptedClient extends Client[Int, String] {
-
-  def decrypt(a: Array[Byte]) = {
-    val n = BigInt(a take 4).toInt
-
-    (n, new String(a drop 4, "UTF-8"))
-  }
-
-  def encrypt(data: (Int, String)) = {
-    val (n, doc) = data
-    val head = BigInt(n).toByteArray
-    val padding = Array.fill[Byte](4 - head.length)(0)
-
-    padding ++ head ++ doc.getBytes("UTF-8")
-  }
+trait ORAM[Id, Doc] {
+  def read(id: Id): Doc
+  def write(id: Id, doc: Doc): Unit
+  def init: Unit
 }

@@ -17,8 +17,8 @@ package data
 
 import java.util.UUID
 
-import sync.ORAM
-
+import oram.{ ORAM, MultiORAM }
+import transport.Remote
 
 class DataStore[Data, Field](
   oram: ORAM[UUID, Data],
@@ -66,9 +66,6 @@ class DataStore2[Data, Field1, Field2](
 
 object DataStore {
   import boopickle.Default._
-  import sync.transport.Remote
-  import sync.MultiORAM
-
 
   implicit val puuid = Pointed(UUID.fromString("16b01bbe-484b-49e8-85c5-f424a983205f"))
   implicit val puuidset = Pointed(Set.empty[UUID])

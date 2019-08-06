@@ -15,8 +15,6 @@
 package unicredit.lethe
 package crypto
 
-import serialization.Serializer
-
 
 class NoCrypter extends Crypter {
   override def encrypt(a: Array[Byte]) = a

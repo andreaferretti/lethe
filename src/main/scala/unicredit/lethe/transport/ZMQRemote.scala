@@ -13,18 +13,33 @@
 * limitations under the License.
 */
 package unicredit.lethe
-package sync
+package transport
+
+import org.zeromq.ZMQ
 
 
-class WrapORAM[K, V, K1 <: K, V1 <:V, Id, Doc] (
-  inner: PathORAM[K, V, K1, V1],
-  bijId: Bijection[Id, K1],
-  bijDoc: Bijection[Doc, V1]
-) extends ORAM[Id, Doc] {
-  override def read(id: Id) = bijDoc.to(inner.read(bijId.from(id)))
+class ZMQRemote(url: String) extends Remote {
+  val context = ZMQ.context(1)
+  val socket = context.socket(ZMQ.REQ)
 
-  override def write(id: Id, doc: Doc) =
-    inner.write(bijId.from(id), bijDoc.from(doc))
+  socket.connect(url)
 
-  override def init = inner.init
+  private def ask(m: Message) = {
+    socket.send(m.toBytes)
+    socket.recv
+  }
+
+  private def tell(m: Message) = { ask(m); () }
+
+  def capacity = Bytes.toInt(ask(Capacity()))
+
+  def fetch(n: Int) = ask(Fetch(n))
+
+  def put(n: Int, a: Array[Byte]) = tell(Put(n, a))
+
+  def init(d: Seq[Array[Byte]], start: Int) = tell(Init(d, start))
+}
+
+object ZMQRemote {
+  def apply(url: String) = new ZMQRemote(url)
 }

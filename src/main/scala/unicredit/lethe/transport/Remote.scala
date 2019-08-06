@@ -12,17 +12,15 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package unicredit.lethe.async
-
-import scala.concurrent.Future
+package unicredit.lethe.transport
 
 
 trait Remote {
-  def capacity: Future[Int]
+  def capacity: Int
 
-  def fetch(n: Int): Future[Array[Byte]]
+  def fetch(n: Int): Array[Byte]
 
-  def put(n: Int, a: Array[Byte]): Future[Unit]
+  def put(n: Int, a: Array[Byte]): Unit
 
-  def init(a: Seq[Array[Byte]]): Future[Unit]
+  def init(a: Seq[Array[Byte]], start: Int): Unit
 }

@@ -83,9 +83,4 @@ object AESCrypter {
 
     apply(AESMaterial(iv, factory.generateSecret(spec).getEncoded, "AES"), rng)
   }
-
-  // def apply(a: Array[Byte])(implicit rng: Random, s: Serializer[AESMaterial]): AESCrypter = {
-  //   val material = s.decode(a)
-  //   apply(material, rng)
-  // }
 }

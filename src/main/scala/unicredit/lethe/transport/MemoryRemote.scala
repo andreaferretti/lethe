@@ -12,23 +12,22 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package unicredit.lethe.async
-
-import scala.concurrent.{ Future, ExecutionContext }
+package unicredit.lethe.transport
 
 
-trait Client[Id, Doc] {
-  implicit def ec: ExecutionContext
+class MemoryRemote(val capacity: Int) extends Remote {
+  var data = Array.fill(capacity)(Array.empty[Byte])
 
-  def remote: Remote
+  def fetch(n: Int) = data(n)
 
-  def decrypt(a: Array[Byte]): (Id, Doc)
+  def put(n: Int, a: Array[Byte]) = { data(n) = a }
 
-  def encrypt(data: (Id, Doc)): Array[Byte]
-
-  def fetchClear(n: Int) = remote.fetch(n) map decrypt
-
-  def putClear(n: Int, data: (Id, Doc)) = remote.put(n, encrypt(data))
-
-  def init(data: Seq[(Id, Doc)]) = remote.init(data map encrypt)
+  def init(d: Seq[Array[Byte]], start: Int) = {
+    if (start + d.length > capacity) {
+      throw new Exception("Exceeding capacity")
+    }
+    for (i <- 0 until d.length) {
+      data(i + start) = d(i)
+    }
+  }
 }

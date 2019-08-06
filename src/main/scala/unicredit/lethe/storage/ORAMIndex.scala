@@ -17,7 +17,7 @@ package storage
 
 import java.util.Random
 
-import sync._
+import oram._
 import transport.Remote
 
 
