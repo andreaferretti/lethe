@@ -70,12 +70,6 @@ on both structured data and free text.
 
 A lot remains to be done, and here is a tentative plan:
 
-* Clients have to mantain some form of key to get access to the data. This
-  includes both a private key in the traditional sense, and additional
-  information that allows to reconstruct to structure of data on the server.
-  Everything is designed so that such information is serializable, but a
-  mechanism to save the key to a file and restore a previous session is not
-  implemented yet.
 * Making it work in Scala.js. Most of the work is done: we have chosen
   libraries that cross-compile, and the communication with the server itself
   is handled by a very simple interface, allowing other transports than
@@ -96,9 +90,6 @@ A lot remains to be done, and here is a tentative plan:
   implemented yet.
 * Implement integrity checks based on https://core.ac.uk/download/pdf/20024962.pdf
 * Implement [Lookahead ORAM](https://www.mccme.ru/~raskin/oram)
-
-The package `unicredit.lethe.async` is currently lagging behind its sync
-counterpart and will need to be adapted accordingly.
 
 
 ## Glossary
