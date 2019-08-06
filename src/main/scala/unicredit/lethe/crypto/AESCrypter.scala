@@ -21,7 +21,9 @@ import java.security.spec.KeySpec
 import javax.crypto.{ Cipher, SecretKey, SecretKeyFactory }
 import javax.crypto.spec.{ IvParameterSpec, PBEKeySpec, SecretKeySpec }
 
-import serialization.Serializer
+import boopickle.Default._
+
+import serialization._
 
 
 case class AESMaterial(
@@ -55,8 +57,8 @@ class AESCrypter(material: AESMaterial, rng: Random) extends Crypter {
     ecipher.doFinal(AESCrypter.randomBytes(prefixLength, rng) ++ content ++ padding)
   }
 
-  override def serialize(implicit s: Serializer[AESMaterial]) =
-    s.encode(material)
+  override def serialize =
+    new BooSerializer[AESMaterial].encode(material)
 }
 
 object AESCrypter {
@@ -81,4 +83,9 @@ object AESCrypter {
 
     apply(AESMaterial(iv, factory.generateSecret(spec).getEncoded, "AES"), rng)
   }
+
+  // def apply(a: Array[Byte])(implicit rng: Random, s: Serializer[AESMaterial]): AESCrypter = {
+  //   val material = s.decode(a)
+  //   apply(material, rng)
+  // }
 }

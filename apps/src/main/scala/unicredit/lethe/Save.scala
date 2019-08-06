@@ -14,22 +14,31 @@
 */
 package unicredit.lethe
 
-import scala.collection.JavaConversions._
+import scala.io.StdIn
 
-import better.files._, Dsl._
+import java.security.SecureRandom
+
 import boopickle.Default._
 
 import sync._
+import data._
+import transport._
 import client._
 
-object Save {
-  def save[K, V, Id <: K : Pointed, Doc <: V : Pointed](
-    path: String,
-    oram: PathORAM[K, V, Id, Doc]
-  ) = File(path).writeBytes(oram.serialize.toIterator)
 
-  def restorePathORAM[K: Pickler, V: Pickler, Id <: K : Pointed, Doc <: V : Pointed](
-    client: StandardClient[(K, V)],
-    path: String
-  ) = PathORAM[K, V, Id, Doc](client, File(path).loadBytes)
+object Save extends App {
+  implicit val pstring = Pointed("")
+
+  val remote = ZMQRemote("tcp://localhost:8888")
+  val params = Params(depth = 8, bucketSize = 4)
+  val oram = PathORAM[String, String, String, String](remote, "Hello my friend", params)
+
+  oram.init
+  oram.write("1", "Alice")
+  oram.write("2", "Bob")
+  oram.write("3", "Eve")
+  oram.write("4", "Mallory")
+
+  val path = "test.oram"
+  Persistence.save(path, oram)
 }

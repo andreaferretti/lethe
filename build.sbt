@@ -41,7 +41,6 @@ lazy val lethe = project.in(file("."))
     testFrameworks += new TestFramework("minitest.runner.Framework")
   )
   .dependsOn(messages)
-  .aggregate(letheServer)
 
 // lazy val messagesJVM = messages.jvm
 // lazy val messagesJS = messages.js
@@ -57,3 +56,7 @@ lazy val letheServer = project.in(file("server"))
     )
   )
   .dependsOn(messages)
+
+lazy val apps = project.in(file("apps"))
+  .settings(commonSettings: _*)
+  .dependsOn(lethe)

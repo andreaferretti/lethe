@@ -42,6 +42,8 @@ class StandardClient[A](
     }
     remote.init(bytes, start)
   }
+
+  def serialize = crypter.serialize
 }
 
 object StandardClient {

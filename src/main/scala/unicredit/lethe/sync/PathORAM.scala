@@ -20,6 +20,7 @@ import java.util.Random
 import boopickle.Default._
 
 import client._
+import crypto._
 import storage._
 import transport.Remote
 import serialization._
@@ -28,6 +29,7 @@ import serialization._
 case class PathORAMMaterial(
   stash: Array[Byte],
   index: Array[Byte],
+  crypter: Array[Byte],
   params: Params
 )
 
@@ -93,7 +95,7 @@ class PathORAM[K, V, Id <: K : Pointed, Doc <: V : Pointed](
   }
 
   def serialize: Array[Byte] = {
-    val material = PathORAMMaterial(stash.serialize, index.serialize, params)
+    val material = PathORAMMaterial(stash.serialize, index.serialize, client.serialize, params)
     new BooSerializer[PathORAMMaterial].encode(material)
   }
 }
@@ -129,13 +131,14 @@ object PathORAM {
   }
 
   def apply[K: Pickler, V: Pickler, Id <: K : Pointed, Doc <: V : Pointed](
-    client: StandardClient[(K, V)],
+    remote: Remote,
     a: Array[Byte]
-  ) = {
-    implicit val rng = new SecureRandom
+  )(implicit rng: Random) = {
     val material = new BooSerializer[PathORAMMaterial].decode(a)
     val stash = MapStash[K, V](material.stash)
     val index = MapIndex[K](material.params.depth, material.index)
+    val aesMaterial = new BooSerializer[AESMaterial].decode(material.crypter)
+    val client = StandardClient[(K, V)](remote, aesMaterial)
 
     new PathORAM(client, stash, index, material.params)
   }
