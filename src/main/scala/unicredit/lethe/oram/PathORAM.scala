@@ -34,7 +34,7 @@ case class PathORAMMaterial(
 )
 
 class PathORAM[K, V, Id <: K : Pointed, Doc <: V : Pointed](
-  client: StandardClient[(K, V)],
+  client: Client[(K, V)],
   stash: Stash[K, V],
   index: Index[K],
   params: Params

@@ -15,6 +15,7 @@
 package unicredit.lethe
 
 import scala.io.StdIn
+import java.security.SecureRandom
 
 import better.files._, Dsl._
 import com.github.tototoshi.csv._
@@ -41,6 +42,7 @@ case class Person(
 object Data extends App {
   implicit val pstring = Pointed("")
   implicit val pperson = Pointed(Person())
+  implicit val rng = new SecureRandom
 
   val store = DataStore[Person, String, String](
     _.first,

@@ -33,8 +33,10 @@ object Search extends App {
   implicit val pstring = Pointed("")
   implicit val puuid = Pointed(UUID.fromString("16b01bbe-484b-49e8-85c5-f424a983205f"))
   implicit val puuidset = Pointed(Set.empty[UUID])
+  implicit val rng = new SecureRandom
 
-  val (index, oram) = MultiORAM.gen2[String, Set[UUID], UUID, String](
+  val multiOramGen = new MultiORAM2[String, Set[UUID], UUID, String]
+  val (index, oram) = multiOramGen.gen(
     remote = ZMQRemote("tcp://localhost:8888"),
     passPhrase = "Hello my friend",
     params = Params(depth = 8, bucketSize = 4)

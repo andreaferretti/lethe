@@ -31,6 +31,7 @@ object ZMQServer extends App {
 
   // val backend = new MemoryBackend
   val backend = new LevelDBBackend(new File(s"data/db-$port"))
+  println(s"Backend started with capacity ${backend.capacity}")
 
   while (true) {
     Message.fromBytes(socket.recv) match {
@@ -41,6 +42,7 @@ object ZMQServer extends App {
         socket.send("ok")
       case Init(data, start) =>
         backend.init(data, start)
+        println(s"Backend reinitialized to capacity ${backend.capacity}")
         socket.send("ok")
     }
   }

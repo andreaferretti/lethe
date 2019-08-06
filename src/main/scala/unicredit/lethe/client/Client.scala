@@ -22,4 +22,6 @@ trait Client[A] {
   def putClear(n: Int, data: A): Unit
 
   def init(data: Seq[A], start: Int): Unit
+
+  def serialize: Array[Byte]
 }

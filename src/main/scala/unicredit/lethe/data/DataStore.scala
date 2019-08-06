@@ -15,9 +15,10 @@
 package unicredit.lethe
 package data
 
-import java.util.UUID
+import java.util.{ UUID, Random }
 
-import oram.{ ORAM, MultiORAM }
+import client.StandardClient
+import oram.{ ORAM, MultiORAM2, MultiORAM3 }
 import transport.Remote
 
 class DataStore[Data, Field](
@@ -75,9 +76,9 @@ object DataStore {
     remote: Remote,
     passPhrase: String,
     params: Params
-  ) = {
-    val (index, oram) = MultiORAM.gen2[Field, Set[UUID], UUID, Data](
-      remote, passPhrase, params)
+  )(implicit rng: Random) = {
+    val multiOramGen = new MultiORAM2[Field, Set[UUID], UUID, Data]
+    val (index, oram) = multiOramGen.gen(remote, passPhrase, params)
 
     oram.init
     index.init
@@ -91,15 +92,9 @@ object DataStore {
     remote: Remote,
     passPhrase: String,
     params: Params
-  ) = {
-    val (index1, index2, oram) = MultiORAM.gen3[
-      Field1,
-      Set[UUID],
-      Field2,
-      Set[UUID],
-      UUID,
-      Data
-    ](remote, passPhrase, params)
+  )(implicit rng: Random) = {
+    val multiOramGen = new MultiORAM3[Field1, Set[UUID], Field2, Set[UUID], UUID, Data]
+    val (index1, index2, oram) = multiOramGen.gen(remote, passPhrase, params)
 
     oram.init
     index1.init
