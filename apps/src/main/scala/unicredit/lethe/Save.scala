@@ -1,4 +1,4 @@
-/* Copyright 2016 UniCredit S.p.A.
+/* Copyright 2016-2019 UniCredit S.p.A.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -15,13 +15,12 @@
 package unicredit.lethe
 
 import scala.io.StdIn
-
 import java.security.SecureRandom
 
 import boopickle.Default._
 
-import sync._
 import data._
+import oram._
 import transport._
 import client._
 
