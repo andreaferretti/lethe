@@ -27,4 +27,6 @@ class WrapORAM[K, V, K1 <: K, V1 <:V, Id, Doc] (
     inner.write(bijId.from(id), bijDoc.from(doc))
 
   override def init = inner.init
+
+  def serialize = inner.serialize
 }

@@ -54,6 +54,12 @@ class MultiORAM2[
       new WrapORAM[K, V, K2, V2, Id2, Doc2](o2, el2[Id1, Id2], el2[Doc1, Doc2])
     )
   }
+
+  def restore(o1: PathORAM[K, V, K1, V1], o2: PathORAM[K, V, K2, V2]) =
+    (
+      new WrapORAM[K, V, K1, V1, Id1, Doc1](o1, el1[Id1, Id2], el1[Doc1, Doc2]),
+      new WrapORAM[K, V, K2, V2, Id2, Doc2](o2, el2[Id1, Id2], el2[Doc1, Doc2])
+    )
 }
 
 class MultiORAM3[
