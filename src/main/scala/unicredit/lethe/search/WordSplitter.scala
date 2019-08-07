@@ -12,19 +12,9 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package unicredit.lethe
-package search
-
-import java.util.UUID
-
-import oram.ORAM
+package unicredit.lethe.search
 
 
-class BasicStore(
-  val index: ORAM[String, Set[UUID]],
-  val oram: ORAM[UUID, String],
-  val splitTerms: Boolean = false
-) extends DocumentStore[String, String] {
-  val chunker = new WordChunker
-  val splitter = if (splitTerms) new WordSplitter else new NoSplitter[String]
+class WordSplitter(n: Int = 3) extends Splitter[String] {
+  def split(s: String) = if (s.length < n) Seq() else s.toLowerCase.sliding(n, 1).toSeq
 }

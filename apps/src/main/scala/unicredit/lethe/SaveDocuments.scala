@@ -41,14 +41,14 @@ object SaveDocuments extends App {
     params = Params(depth = 16, bucketSize = 4)
   )
 
-  val store = new BasicStore(index, oram)
+  val store = new BasicStore(index, oram, splitTerms = true)
 
   val wikipedia = file"wiki-tokenized.txt"
   val n = 20
   val utf8 = Charset.forName("UTF-8")
 
   var numLines = 0
-  for (_ <- wikipedia.lineIterator(charset=utf8)) {
+  for (_ <- wikipedia.lineIterator(charset = utf8)) {
     numLines += 1
   }
   println(s"The file contains $numLines lines")
@@ -61,7 +61,7 @@ object SaveDocuments extends App {
 
   println("Adding documents...")
   var count = 0
-  for (documents <- wikipedia.lineIterator(charset=utf8).sliding(n, n)) {
+  for (documents <- wikipedia.lineIterator(charset = utf8).sliding(n, n)) {
     store.addDocuments(documents)
     count += 1
     print(s"${count * 20}/$numLines\r")

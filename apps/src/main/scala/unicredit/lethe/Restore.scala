@@ -52,4 +52,5 @@ object Restore extends App {
         }
     }
   }
+  Persistence.save(path, oram)
 }

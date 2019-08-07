@@ -22,13 +22,15 @@ import oram.ORAM
 
 trait DocumentStore[Doc, Term] {
   def chunker: Chunker[Doc, Term]
+  def splitter: Splitter[Term]
 
   def index: ORAM[Term, Set[UUID]]
   def oram: ORAM[UUID, Doc]
 
   def addDocument(doc: Doc) = {
     val uuid = UUID.randomUUID
-    val terms = chunker.chunks(doc)
+    val terms = chunker.chunks(doc).toSet
+    val splitTerms = terms.flatMap(splitter.split)
     oram.write(uuid, doc)
     for (term <- terms) {
       val docs = index.read(term)
@@ -41,7 +43,8 @@ trait DocumentStore[Doc, Term] {
     val docTermPairs = for {
       (doc, uuid) <- indexedDocs
       term <- chunker.chunks(doc)
-    } yield (term, uuid)
+      splitTerm <- splitter.split(term)
+    } yield (splitTerm, uuid)
     val docMap = docTermPairs groupBy (_._1) mapValues { pairs =>
       pairs map (_._2)
     }
@@ -54,6 +57,14 @@ trait DocumentStore[Doc, Term] {
     }
   }
 
-  def search(term: Term): Set[Doc] =
-    index.read(term) map oram.read
+  def search(term: Term): Set[Doc] = {
+    val splitTerms = splitter.split(term)
+    if (splitTerms.isEmpty) Set()
+    else {
+      val docIds = splitTerms.map(index.read).reduce(_ & _)
+      val docs = docIds map oram.read
+
+      docs filter { doc => chunker.chunks(doc).contains(term) }
+    }
+  }
 }

@@ -36,7 +36,7 @@ object RestoreDocuments extends App {
 
   val remote = ZMQRemote("tcp://localhost:8888")
   val (index, oram) = Persistence.restoreMultiORAM2[String, Set[UUID], UUID, String](remote, "index.oram", "data.oram")
-  val store = new BasicStore(index, oram)
+  val store = new BasicStore(index, oram, splitTerms = true)
 
   var keepGoing = true
   while (keepGoing) {
@@ -51,4 +51,7 @@ object RestoreDocuments extends App {
       }
     }
   }
+
+  Persistence.save("data.oram", oram)
+  Persistence.save("index.oram", index)
 }
