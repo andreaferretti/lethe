@@ -9,3 +9,4 @@ target
 .metals/
 project/.bloop/
 *.oram
+project/metals.sbt

@@ -14,7 +14,7 @@
 */
 package unicredit.lethe
 
-import scala.collection.JavaConversions._
+import scala.jdk.CollectionConverters
 import java.util.Random
 
 import better.files._, Dsl._
@@ -27,12 +27,12 @@ object Persistence {
   def save[K, V, Id <: K : Pointed, Doc <: V : Pointed](
     path: String,
     oram: PathORAM[K, V, Id, Doc]
-  ) = File(path).writeBytes(oram.serialize.toIterator)
+  ) = File(path).writeBytes(oram.serialize.iterator)
 
   def save[K, V, K1 <: K, V1 <:V, Id, Doc](
     path: String,
     oram: WrapORAM[K, V, K1, V1, Id, Doc]
-  ) = File(path).writeBytes(oram.serialize.toIterator)
+  ) = File(path).writeBytes(oram.serialize.iterator)
 
   def restorePathORAM[K: Pickler, V: Pickler, Id <: K : Pointed, Doc <: V : Pointed](
     remote: Remote,

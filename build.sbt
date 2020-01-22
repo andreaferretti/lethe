@@ -3,7 +3,7 @@ name := "lethe"
 val zeromq = "org.zeromq" % "jeromq" % "0.3.5"
 
 val commonSettings = Seq(
-  scalaVersion := "2.12.8",
+  scalaVersion := "2.13.1",
   organization := "unicredit",
   version := "0.1.1-SNAPSHOT",
   scalacOptions ++= Seq(
@@ -17,7 +17,7 @@ lazy val messages = project.in(file("messages"))
   .settings(commonSettings: _*)
   .settings(
     libraryDependencies ++= Seq(
-      "io.suzaku" %% "boopickle" % "1.3.0"
+      "io.suzaku" %% "boopickle" % "1.3.1"
     )
   )
 
@@ -26,8 +26,8 @@ lazy val lethe = project.in(file("."))
   .settings(
     libraryDependencies ++= Seq(
       zeromq,
-      "com.github.pathikrit" %% "better-files" % "3.6.0",
-      "io.monix" %% "minitest" % "2.2.1" % "test"
+      "com.github.pathikrit" %% "better-files" % "3.8.0",
+      "io.monix" %% "minitest" % "2.7.0" % "test"
     ),
     testFrameworks += new TestFramework("minitest.runner.Framework")
   )
