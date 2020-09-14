@@ -26,7 +26,7 @@ It is a model that helps when designing applications that delegate an untrusted
 server with access to their data (think cloud computing). Of course, in such a
 situation, one should encrypt the data on the client side.
 
-[Turns out](https://www.internetsociety.org/sites/default/files/06_1.pdf) this
+[Turns out](https://personal.utdallas.edu/~mxk055100/publications/ndss2012.pdf) this
 is [not enough](https://eprint.iacr.org/2013/163.pdf). Observation of the access
 patterns to the data can allow an attacker to gain significant information. As
 shown in the papers above, actual attacks can be mounted and this is not only a
